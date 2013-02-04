@@ -1,3 +1,3 @@
-                   VSem (Visual Semantics Library)
-                            														Version 0.1
+                                                VSem (Visual Semantics Library)
+                            							 Version 0.1
 
