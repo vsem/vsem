@@ -1,4 +1,4 @@
-function reweightedVectors = vsem_reweightVectors(vectors, scores)
+function reweightedVectors = reweightVectors(vectors, scores)
 %
 %
 %

@@ -1,4 +1,4 @@
-function [commonConcepts, vectors1, vectors2] = vsem_filterChannels(concepts1, vectors1, concepts2, vectors2)
+function [commonConcepts, vectors1, vectors2] = filterChannels(concepts1, vectors1, concepts2, vectors2)
 %
 %
 %
