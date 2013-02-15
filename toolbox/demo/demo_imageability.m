@@ -1,4 +1,4 @@
-% VS_DEMO_IMAGEABILITY  Demo: REWEIGHTING: reweight conceptBovwHistograms
+% DEMO_IMAGEABILITY  Demo: REWEIGHTING: reweight conceptBovwHistograms
 % according to the imageability score of each concept
 %
 %
@@ -76,7 +76,7 @@ end
 
 
 % filter out the concepts that are not contained by both channels
-[commonConcepts, textVectors, imageVectors] = semantics.representation.utility.vsem_filterChannels(textConcepts, textVectors, imageConcepts, imageVectors) ;
+[commonConcepts, textVectors, imageVectors] = semantics.representation.utility.filterChannels(textConcepts, textVectors, imageConcepts, imageVectors) ;
 multimodalSemanticSpace = semantics.representation.MultimodalSemanticSpace(commonConcepts, textVectors, imageVectors) ;
 similarityMeasure = 'cosine' ;
 weightingModes = {'mean' 'min' 'max'} ;
@@ -86,13 +86,19 @@ weightingModes = {'mean' 'min' 'max'} ;
 %                                                  Compute similarity 
 % --------------------------------------------------------------------
 
+
+% TODO:
+% TRAIN COMBINATION
+% TEST COMBINATION
+
+
 % compute similarity for the text channel
 channel = 'text' ;
-[textSimilarityScores textPairWithScores] = semantics.similarity.vsem_computeSimilarity(multimodalSemanticSpace, conceptPairs, similarityMeasure, channel, weightingModes, abstScores) ;
+[textSimilarityScores textPairWithScores] = semantics.similarity.computeSimilarity(multimodalSemanticSpace, conceptPairs, similarityMeasure, channel, weightingModes, abstScores) ;
 
 % compute similarity for the image channel
 channel = 'image' ;
-[imageSimilarityScores imagePairWithScores] = semantics.similarity.vsem_computeSimilarity(multimodalSemanticSpace, conceptPairs, similarityMeasure, channel, weightingModes, abstScores) ;
+[imageSimilarityScores imagePairWithScores] = semantics.similarity.computeSimilarity(multimodalSemanticSpace, conceptPairs, similarityMeasure, channel, weightingModes, abstScores) ;
 
 % combine the scores of the two channels
 meanMimilarityScores = [textSimilarityScores{1}{:}] + [imageSimilarityScores{1}{:}] ;

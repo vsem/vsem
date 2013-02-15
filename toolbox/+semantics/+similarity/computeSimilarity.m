@@ -1,4 +1,4 @@
-function [similarityScores pairWithScores]  = vsem_computeSimilarity(multimodalSemanticSpace, conceptPairs, similarityMeasure, channel, weightingModes, scores)
+function [similarityScores pairWithScores]  = computeSimilarity(multimodalSemanticSpace, conceptPairs, similarityMeasure, channel, weightingModes, scores)
 %
 %
 %
