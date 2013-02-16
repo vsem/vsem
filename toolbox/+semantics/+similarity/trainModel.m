@@ -109,14 +109,3 @@ for k = 1:numel(params.similarity.weightingModes)
     end
     
 end
-
-
-
-
-
-
-
-
-
-
-
