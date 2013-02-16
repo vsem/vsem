@@ -16,14 +16,14 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, params)
 %   beta = models the impact of rs in the reweighting
 %
 %   MSS:: semantics.representation.MultimodalSemanticSpace
-%     This is the multimodal semantic space that to train
+%     This is the multimodal semantic space to be trained
 %
 %   train:: the training data
 %
 %   weights:: the weights associated to each of the target concepts
 %     for the reweighting
 %
-%   params:: the parameters for similarity computation
+%   params:: the parameters for computing the semantic similarity 
 %
 
 % Authors: A1
@@ -39,9 +39,9 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, params)
 
 trainCorr = 0;
 init = true;
-% cycle over the weighting  modes, typicall MEAN,MIN,MAX
+% cycle over the weighting  modes, typicall mean,min,max
 for k = 1:numel(params.similarity.weightingModes)
-    % cycle over betas, the impact factor of the reweighting scores
+    % cycle over betas (the impact factors of the reweighting function)
     for b = 1:numel(params.similarity.betas)
         % cycle over the channels, typically text and image for a
         % multimodal semantic space
@@ -50,7 +50,7 @@ for k = 1:numel(params.similarity.weightingModes)
             for i = 1:numel(train.data{1})
                 % Note that a dataset for computing semantic similarity is
                 % constituted of a list of word pairs together with their
-                % associated gold score. That's what train.data contains.
+                % associated gold scores. That's what train.data contains.
                 % See [1] for a traiditional semantic similarity dataset.
                 concept1 = train.data{1}{i};
                 concept2 = train.data{2}{i};
