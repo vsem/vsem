@@ -36,7 +36,6 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, params)
 %
 % -------------------------------------------------------------------
 
-
 trainCorr = 0;
 init = true;
 % cycle over the weighting  modes, typicall mean,min,max
@@ -58,8 +57,7 @@ for k = 1:numel(params.similarity.weightingModes)
                 % check if both concepts have a reweighting weight
                 if weights.isKey(concept1) == 1 && weights.isKey(concept2) == 1
                     weight1 = (1 - weights(concept1))/b;
-                    weight2 = (1 - weights(concept2))/b;
-                    
+                    weight2 = (1 - weights(concept2))/b;  
                     if strcmp(params.similarity.channels{j}, 'image')
                         % Since a reweighting score assumes that the two
                         % channels are complementary, the sum of the two
@@ -73,8 +71,7 @@ for k = 1:numel(params.similarity.weightingModes)
                     pairScore = MSS.getWeightedSimilarity(concept1, concept2,...
                         params.similarity.similarityMeasure, params.similarity.channels{j},...
                         params.similarity.weightingModes{k},...
-                        [weight1 weight2]);
-                    
+                        [weight1 weight2]);  
                     if pairScore ~= -1
                         % Populate once for all the gold scores for those
                         % word pairs for which a similarity score was
@@ -85,8 +82,7 @@ for k = 1:numel(params.similarity.weightingModes)
                         % populate the model scores
                         modelScores(scoreIndex,j) = pairScore;
                         scoreIndex = scoreIndex+1;
-                    end
-                    
+                    end    
                 end
             end
             init = false;
