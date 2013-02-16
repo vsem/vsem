@@ -62,10 +62,10 @@ for k = 1:numel(params.similarity.weightingModes)
                     
                     if strcmp(params.similarity.channels{j}, 'image')
                         % Since a reweighting score assumes that the two
-                        % channels to be complementary, we have to gurantee
-                        % that the two components of the weight (one to
-                        % reweight the text channel and the other to
-                        % reweight the image channel) sums to one.
+                        % channels are complementary, the sum of the two
+                        % weight components (one for reweighting 
+                        %the text channel and the other tor reweighting 
+                        % the image channel) must be 1.
                         weight1 = 1 - weight1;
                         weight2 = 1 - weight2;
                     end
