@@ -16,7 +16,7 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, params)
 %   beta = models the impact of rs in the reweighting
 %
 %   MSS:: semantics.representation.MultimodalSemanticSpace
-%     This is the multimodal semantic space that we want to train
+%     This is the multimodal semantic space that to train
 %
 %   train:: the training data
 %
@@ -106,6 +106,5 @@ for k = 1:numel(params.similarity.weightingModes)
             f = params.similarity.weightingModes{k};
             beta = b;
         end
-    end
-    
+    end   
 end
