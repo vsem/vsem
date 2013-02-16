@@ -27,6 +27,7 @@ options.paths.textConcepts = fullfile(options.paths.dataDir, 'matrices/textConce
 options.paths.imageabilityScores = fullfile(options.paths.dataDir, 'scores/abstrScores.mat') ;
 
 options.paths.trainData = fullfile(options.paths.dataDir, 'train/wordsim.csv') ;
+options.paths.testData = fullfile(options.paths.dataDir, 'train/wordsim.csv') ;
 
 % the file containing the concept pair for which a semantic similarity measure has to be computed
 options.paths.conceptPairs = fullfile(options.paths.dataDir, 'wordsim353_naturalform.pairs') ;
@@ -77,15 +78,17 @@ end
 
 
 [concepts1, concepts2, goldScores] = textread(options.paths.trainData, '%s%s%f','delimiter',';');
-options.data.train{1} = concepts1;
-options.data.train{2} = concepts2;
-options.data.train{3} = goldScores;
+options.train.data{1} = concepts1;
+options.train.data{2} = concepts2;
+options.train.data{3} = goldScores;
+
+
+
 
 % filter out the concepts that are not contained by both channels
 [commonConcepts, textVectors, imageVectors] = semantics.representation.utility.filterChannels(textConcepts, textVectors, imageConcepts, imageVectors) ;
 MSS = semantics.representation.MultimodalSemanticSpace(commonConcepts, textVectors, imageVectors) ;
-similarityMeasure = 'cosine' ;
-weightingModes = {'mean' 'min' 'max'} ;
+
 
 
 % --------------------------------------------------------------------
@@ -106,7 +109,30 @@ params.similarity.betas = 1:1:10;
 
 
 
-[bestSetting, maxCorr] = semantics.similarity.trainModel(MSS, options.data.train, options.data.imageabilityScores, params.similarity)
+[params.similarity.trainedWeigthingMode, params.similarity.trainedBeta, maxCorr] = semantics.similarity.trainModel(MSS, options.train, options.data.imageabilityScores, params);
+
+
+
+[concepts1, concepts2, goldScores] = textread(options.paths.testData, '%s%s%f','delimiter',';');
+options.test.data{1} = concepts1;
+options.test.data{2} = concepts2;
+options.test.data{3} = goldScores;
+
+
+[testCorr testedData] = semantics.similarity.testModel(MSS, options.test, options.data.imageabilityScores, params);
+
+fprintf('The model obtained a correlation of %s on the testing data. \n', num2str(testCorr)) ;
+
+[concepts1, concepts2, goldScores] = textread(options.paths.testData, '%s%s%f','delimiter',';');
+options.test.data{1} = concepts1;
+options.test.data{2} = concepts2;
+options.test.data{3} = goldScores;
+
+
+[testCorr testedData] = semantics.similarity.testModel(MSS, options.test, options.data.imageabilityScores, params);
+
+fprintf('The model obtained a correlation of %s on the testing data. \n', num2str(testCorr)) ;
+
 
 
 
