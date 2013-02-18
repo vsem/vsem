@@ -72,10 +72,14 @@ trainCorr = 0;
 init = true;
 % cycle over the weighting  modes, typically mean,min,max
 for k = 1:numel(options.fModes)
+    
     fprintf('\nTraining f = %s:\n', options.fModes{k});
+    
     % cycle over betas (the impact factors of the reweighting function)
     for b = options.betas
+        
         fprintf('Training beta = %s (%.2f %%)\n', num2str(b), 100 * b / numel(options.betas));
+        
         % cycle over the two channels text and image
         for j = 1:numel(options.channels)         
             scoreIndex = 1;
@@ -140,5 +144,7 @@ for k = 1:numel(options.fModes)
             beta = b;
         end
     end
+    
     fprintf('\nA maximum correlation of %s was found\n\n', num2str(trainCorr));
+    
 end
