@@ -15,26 +15,26 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, params)
 %   rs = reweighting score for the given word (e.g., imageability score)
 %   beta = models the impact of rs in the reweighting
 %
-%   MSS:: semantics.representation.MultimodalSemanticSpace
+%   MSS:: [semantics.representation.MultimodalSemanticSpace]
 %     This is the multimodal semantic space to be trained
 %
-%   train:: the training data
+%   train:: 
+%     The training data
 %
-%   weights:: the weights associated to each of the target concepts
+%   weights:: 
+%     The weights associated to each of the target concepts 
 %     for the reweighting
 %
-%   params:: the parameters for computing the semantic similarity 
+%   params:: 
+%     The parameters for computing the semantic similarity 
 %
 
 % Authors: A1
 
 % AUTORIGHTS
 %
-% This file is part of VSEM, available under the terms of the
-% GNU GPLv2, or (at your option) any later version.
-% -------------------------------------------------------------------
-%
-% -------------------------------------------------------------------
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
 
 trainCorr = 0;
 init = true;
