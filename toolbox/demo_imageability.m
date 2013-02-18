@@ -65,22 +65,25 @@ MSS = semantics.representation.MultimodalSemanticSpace(commonConcepts,...
 % --------------------------------------------------------------------
 
 disp('Training the multimodal combination...');
+fprintf('\n');
 
 [config.train.data, fileName] = parseData(config.path.trainData);
 
 [f, beta, trainCorr] = semantics.similarity.trainModel(MSS,...
     config.train, config.data.imageabilityScores);
 
-fprintf('The model obtained a max correlation of %s on the training data %s. \n',...
+fprintf('\nThe model obtained a max correlation of %s on the training data %s. \n',...
     num2str(trainCorr), fileName);
 
 config.test.options = {'fMode', f, 'beta', beta};
+
 
 % --------------------------------------------------------------------
 %                                  Test the multimodal semantic space
 % --------------------------------------------------------------------
 
 disp('Testing the multimodal combination...');
+fprintf('\n');
 
 for i = 1:numel(config.path.testData)
     
@@ -111,7 +114,7 @@ fclose(fid1);
 function [data, fileName] = parseData(filePath)
 % -------------------------------------------------------------------------
 
-[concepts1, concepts2, goldScores] = textread(filePath, '%s%s%f','delimiter',';');
+[concepts1, concepts2, goldScores] = textread(filePath, '%s%s%f','delimiter',' ');
 data{1} = concepts1;
 data{2} = concepts2;
 data{3} = goldScores;

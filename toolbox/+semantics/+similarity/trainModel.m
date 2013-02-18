@@ -26,7 +26,7 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
 %     The weights for computing reweightedSim(w1, w2).
 %
 %   channels:: {'text', 'image'}
-%     The channels of the multimodal models.
+%     The channels of the multimodal model.
 %
 %
 %   similarityMeasure:: 'cosine'
@@ -72,9 +72,10 @@ trainCorr = 0;
 init = true;
 % cycle over the weighting  modes, typically mean,min,max
 for k = 1:numel(options.fModes)
+    fprintf('\nTraining f = %s:\n', options.fModes{k});
     % cycle over betas (the impact factors of the reweighting function)
-    for b = 1:numel(options.betas)
-        
+    for b = options.betas
+        fprintf('Training beta = %s (%.2f %%)\n', num2str(b), 100 * b / numel(options.betas));
         % cycle over the two channels text and image
         for j = 1:numel(options.channels)         
             scoreIndex = 1;
@@ -138,5 +139,6 @@ for k = 1:numel(options.fModes)
             f = options.fModes{k};
             beta = b;
         end
-    end   
+    end
+    fprintf('\nA maximum correlation of %s was found\n\n', num2str(trainCorr));
 end

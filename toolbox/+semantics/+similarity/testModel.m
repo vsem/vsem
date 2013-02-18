@@ -27,7 +27,7 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 %     The weights for computing reweightedSim(w1, w2).
 %
 %   channels:: {'text', 'image'}
-%     The channels of the multimodal models.
+%     The channels of the multimodal model.
 %
 %   similarityMeasure:: 'cosine'
 %     The type of similarity measure to be computed.
