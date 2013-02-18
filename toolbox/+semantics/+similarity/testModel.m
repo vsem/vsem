@@ -1,58 +1,127 @@
-function [testCorr testedData] = testModel(MSS, test, weights, params)
+function [testCorr testedData] = testModel(MSS, test, weights, varargin)
+% TESTMODEL  Test a multimodal semantic space
+%   [TESTCORR, TESTEDDATA] = TestMODEL(MSS, TEST, WEIGHTS, PARAMS) test the
+%   given parametrization of a multiomdal semantic model 
+%   on the given test dataset for semantic similarity.
 %
+%   MSS:: [semantics.representation.MultimodalSemanticSpace]
+%     This is the multimodal semantic space to be tested.
 %
+%   test:: 
+%     The testing data.
 %
+%   weights::
+%     The weights for computing reweightedSim(w1, w2).
 %
+%   similarityMeasure:: 'cosine'
+%     The type of similarity measure to be computed.
 %
+%   fModes:: {'mean', 'min', 'max'}
+%     The reweighting functions f to use for computing reweightedSim(w1, w2).
 %
+%   channels:: {'text', 'image'}
+%     The channels of the multimodal models.
 %
+%   betas:: 1:1:10
+%     The impact factors to use for computing reweightedSim(w1, w2).
+%      
+%   correlationType:: 'Spearman' 
+%     The correlation measure to use to compare with the gold standard. 
+%     The available correlation types are Pearson, Kendall or Spearman.
 %
+
+% Authors: A1
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
+
 
 % -------------------------------------------------------------------
-%
+%                                                 Parse the arguments
 % -------------------------------------------------------------------
 
-disp('Testing the multimodal combination...');
+options.similarityMeasure = 'cosine';
+options.channels = {'text', 'image'};
+options.correlationType = 'Spearman';
+options.fmode = '';
+options.beta = [];
 
-maxCorr = 0;
+options = vl_argparse(options, varargin);
+
+% check if fmode and beta have been passed as arguments 
+if length(options.fmode) == 0 || isempty(options.beta)
+    if length(options.fmode) == 0
+        error('testModel:arguments_error','A valid fmode must be specified')
+    end
+    if isempty(options.beta)
+        error('testModel:arguments_error','A valid beta must be specified')
+    end
+end
 
 
-for j = 1:numel(params.similarity.channels)
+
+% -------------------------------------------------------------------
+%                                                     Train the model
+% -------------------------------------------------------------------
+
+% cycle over the two channels text and image
+for j = 1:numel(options.channels)
     scoreIndex = 1;
     for i = 1:numel(test.data{1})
+        % Note that a dataset for computing semantic similarity is
+        % constituted of a list of word pairs together with their
+        % associated gold scores. That's what test.data contains.
+        % See [1] for a traiditional semantic similarity dataset.
         concept1 = test.data{1}{i}; % transform to test.data
         concept2 = test.data{2}{i};
         goldScore = test.data{3}(i);
+        
+        % check if both concepts have a reweighting weight
         if weights.isKey(concept1) == 1 && weights.isKey(concept2) == 1
             
+            weight1 = (1 - weights(concept1))/options.beta;
+            weight2 = (1 - weights(concept2))/options.beta;
             
-            weight1 = (1 - weights(concept1))/params.similarity.trainedBeta;
-            weight2 = (1 - weights(concept2))/params.similarity.trainedBeta;
-            
-            if strcmp(params.similarity.channels{j}, 'image')
+            if strcmp(options.channels{j}, 'image')
+                % Since a reweighting score assumes that the two
+                % channels are complementary, the sum of the two
+                % weight components (one for reweighting 
+                %the text channel and the other tor reweighting 
+                % the image channel) must be 1.
                 weight1 = 1 - weight1;
                 weight2 = 1 - weight2;
             end
-            
+            % the similarity score for the given pair
             pairScore = MSS.getWeightedSimilarity(concept1, concept2,...
-                params.similarity.similarityMeasure, params.similarity.channels{j}, params.similarity.trainedWeigthingMode,...
+                options.similarityMeasure, options.channels{j},... 
+                options.fmode,...
                 [weight1 weight2]);
             
             if pairScore ~= -1
+                % populate the model and the test scores
                 testScores(scoreIndex,1) = goldScore;
                 modelScores(scoreIndex,j) = pairScore;
+                % store the pairs for which a similarity score was computed
                 scoredPairs{scoreIndex} = {concept1 concept2};
                 scoreIndex = scoreIndex+1;
             end
         end
+        
     end
 end
+
 combinedModelScores = 0;
-for c = 1:numel(params.similarity.channels)
+for c = 1:numel(options.channels)
+    % Combine the similarity scores provided by the two channels
+    % independently. This is typycally called late fusion.
     combinedModelScores = combinedModelScores + modelScores(:,c);
 end
 
-testCorr = corr(testScores, combinedModelScores, 'type', 'Spearman');
+% compute the correlation of the combined model scores
+testCorr = corr(testScores, combinedModelScores, 'type', options.correlationType);
+% fit testedData with pairs and scores used to compute the correlation
 testedData{1} = scoredPairs;
 testedData{2} = combinedModelScores;
 
