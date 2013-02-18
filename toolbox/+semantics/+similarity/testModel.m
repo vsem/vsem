@@ -26,14 +26,14 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 %   weights::
 %     The weights for computing reweightedSim(w1, w2).
 %
+%   channels:: {'text', 'image'}
+%     The channels of the multimodal models.
+%
 %   similarityMeasure:: 'cosine'
 %     The type of similarity measure to be computed.
 %
 %   fMode:: ''
 %     The reweighting function f to use for computing reweightedSim(w1, w2).
-%
-%   channels:: {'text', 'image'}
-%     The channels of the multimodal models.
 %
 %   beta:: []
 %     The impact factors to use for computing reweightedSim(w1, w2).
@@ -55,11 +55,11 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 %                                                 Parse the arguments
 % -------------------------------------------------------------------
 
-options.similarityMeasure = 'cosine';
 options.channels = {'text', 'image'};
-options.correlationType = 'Spearman';
+options.similarityMeasure = 'cosine';
 options.fmode = '';
 options.beta = [];
+options.correlationType = 'Spearman';
 
 options = vl_argparse(options, varargin);
 
@@ -76,7 +76,7 @@ end
 
 
 % -------------------------------------------------------------------
-%                                                     Train the model
+%                                                      Test the model
 % -------------------------------------------------------------------
 
 % cycle over the two channels text and image

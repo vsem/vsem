@@ -25,14 +25,15 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
 %   weights::
 %     The weights for computing reweightedSim(w1, w2).
 %
+%   channels:: {'text', 'image'}
+%     The channels of the multimodal models.
+%
+%
 %   similarityMeasure:: 'cosine'
 %     The type of similarity measure to be computed.
 %
 %   fModes:: {'mean', 'min', 'max'}
 %     The reweighting functions f to use for computing reweightedSim(w1, w2).
-%
-%   channels:: {'text', 'image'}
-%     The channels of the multimodal models.
 %
 %   betas:: 1:1:10
 %     The impact factors to use for computing reweightedSim(w1, w2).
@@ -54,9 +55,9 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
 %                                                 Parse the arguments
 % -------------------------------------------------------------------
 
+options.channels = {'text', 'image'};
 options.similarityMeasure = 'cosine';
 options.fModes = {'mean', 'min', 'max'};
-options.channels = {'text', 'image'};
 options.betas = 1:1:10;
 options.correlationType = 'Spearman';
 
