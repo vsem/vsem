@@ -74,7 +74,6 @@ if length(options.fmode) == 0 || isempty(options.beta)
 end
 
 
-
 % -------------------------------------------------------------------
 %                                                      Test the model
 % -------------------------------------------------------------------
@@ -137,17 +136,3 @@ testCorr = corr(testScores, combinedModelScores, 'type', options.correlationType
 % fit testedData with pairs and scores used to compute the correlation
 testedData{1} = scoredPairs;
 testedData{2} = combinedModelScores;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
