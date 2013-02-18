@@ -4,6 +4,19 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 %   given parametrization of a multiomdal semantic model 
 %   on the given test dataset for semantic similarity.
 %
+%   The semantic similarity between two cocnepts is computed with the following 
+%   formula:
+%
+%   reweightedSim(w1, w2) = sim(w1,w2) * f(weights(w1)/beta, weights(w2)/beta)
+%
+%   where
+%
+%   sim = similarity measure for w1 and w2 (e.g., cosine similarity)
+%   f = mean,min,max
+%   weights = the weight for the given concept (e.g., imageability score)
+%   beta = models the impact of rs in the reweighting
+%
+%
 %   MSS:: [semantics.representation.MultimodalSemanticSpace]
 %     This is the multimodal semantic space to be tested.
 %
@@ -16,13 +29,13 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 %   similarityMeasure:: 'cosine'
 %     The type of similarity measure to be computed.
 %
-%   fModes:: {'mean', 'min', 'max'}
-%     The reweighting functions f to use for computing reweightedSim(w1, w2).
+%   fMode:: ''
+%     The reweighting function f to use for computing reweightedSim(w1, w2).
 %
 %   channels:: {'text', 'image'}
 %     The channels of the multimodal models.
 %
-%   betas:: 1:1:10
+%   beta:: []
 %     The impact factors to use for computing reweightedSim(w1, w2).
 %      
 %   correlationType:: 'Spearman' 
@@ -71,7 +84,7 @@ for j = 1:numel(options.channels)
     scoreIndex = 1;
     for i = 1:numel(test.data{1})
         % Note that a dataset for computing semantic similarity is
-        % constituted of a list of word pairs together with their
+        % constituted of a list of concept pairs together with their
         % associated gold scores. That's what test.data contains.
         % See [1] for a traiditional semantic similarity dataset.
         concept1 = test.data{1}{i}; % transform to test.data

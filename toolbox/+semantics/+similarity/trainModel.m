@@ -4,7 +4,8 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
 %   optimal parametrization of a multiomdal semantic model on the given
 %   train dataset for semantic similarity.
 %
-%   In particular, it learns f and beta from the forumla:
+%   In particular, it learns f and beta in the following formula to compute
+%   semantic similarity:
 %
 %   reweightedSim(w1, w2) = sim(w1,w2) * f(weights(w1)/beta, weights(w2)/beta)
 %
@@ -12,7 +13,7 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
 %
 %   sim = similarity measure for w1 and w2 (e.g., cosine similarity)
 %   f = mean,min,max
-%   weights = the weight for the given word (e.g., imageability score)
+%   weights = the weight for the given concept (e.g., imageability score)
 %   beta = models the impact of rs in the reweighting
 %
 %   MSS:: semantics.representation.MultimodalSemanticSpace
@@ -77,7 +78,7 @@ for k = 1:numel(options.fModes)
             scoreIndex = 1;
             for i = 1:numel(train.data{1})
                 % Note that a dataset for computing semantic similarity is
-                % constituted of a list of word pairs together with their
+                % constituted of a list of concept pairs together with their
                 % associated gold scores. That's what train.data contains.
                 % See [1] for a traiditional semantic similarity dataset.
                 concept1 = train.data{1}{i};
@@ -104,7 +105,7 @@ for k = 1:numel(options.fModes)
                         [weight1 weight2]);  
                     if pairScore ~= -1
                         % Populate once for all the gold scores for those
-                        % word pairs for which a similarity score was
+                        % concept pairs for which a similarity score was
                         % succesfully computed.
                         if init
                             trainScores(scoreIndex,1) = goldScore;
