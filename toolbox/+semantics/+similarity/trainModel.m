@@ -1,4 +1,4 @@
-function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
+function [f, beta, trainCorr] = trainModel(MSS, train, weights, varargin)
 % TRAINMODEL  Train a multimodal semantic space
 %   [WEIGHTINGMODE, BETA, TRAINCORR] = TRAINMODEL(MSS, TRAIN, WEIGHTS, PARAMS) learns the
 %   optimal parametrization of a multiomdal semantic model on the given
@@ -12,33 +12,36 @@ function [f, beta, trainCorr]  = trainModel(MSS, train, weights, varargin)
 %   where
 %
 %   sim = similarity measure for w1 and w2 (e.g., cosine similarity)
+%
 %   f = mean,min,max
+%
 %   weights = the weight for the given concept (e.g., imageability score)
+%
 %   beta = models the impact of rs in the reweighting
 %
 %   MSS:: semantics.representation.MultimodalSemanticSpace
 %     This is the multimodal semantic space to be trained.
 %
-%   train:: 
+%   Train:: 
 %     The training data.
 %
-%   weights::
+%   Weights::
 %     The weights for computing reweightedSim(w1, w2).
 %
-%   channels:: {'text', 'image'}
+%   Channels:: {'text', 'image'}
 %     The channels of the multimodal model.
 %
 %
-%   similarityMeasure:: 'cosine'
+%   SimilarityMeasure:: 'cosine'
 %     The type of similarity measure to be computed.
 %
-%   fModes:: {'mean', 'min', 'max'}
+%   FModes:: {'mean', 'min', 'max'}
 %     The reweighting functions f to use for computing reweightedSim(w1, w2).
 %
-%   betas:: 1:1:10
+%   Betas:: 1:1:10
 %     The impact factors to use for computing reweightedSim(w1, w2).
 %      
-%   correlationType:: 'Spearman' 
+%   CorrelationType:: 'Spearman' 
 %     The correlation measure to use to compare with the gold standard. 
 %     The available correlation types are Pearson, Kendall or Spearman.
 %
@@ -108,8 +111,7 @@ for k = 1:numel(options.fModes)
                     % the similarity score for the given pair
                     pairScore = MSS.getWeightedSimilarity(concept1, concept2,...
                         options.similarityMeasure, options.channels{j},...
-                        options.fModes{k},...
-                        [weight1 weight2]);  
+                        [weight1 weight2], options.fModes{k});  
                     if pairScore ~= -1
                         % Populate once for all the gold scores for those
                         % concept pairs for which a similarity score was

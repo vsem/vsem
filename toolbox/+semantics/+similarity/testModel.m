@@ -1,6 +1,6 @@
 function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 % TESTMODEL  Test a multimodal semantic space
-%   [TESTCORR, TESTEDDATA] = TestMODEL(MSS, TEST, WEIGHTS, PARAMS) test the
+%   [TESTCORR, TESTEDDATA] = TESTMODEL(MSS, TEST, WEIGHTS, PARAMS) tests the
 %   given parametrization of a multiomdal semantic model 
 %   on the given test dataset for semantic similarity.
 %
@@ -12,33 +12,36 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 %   where
 %
 %   sim = similarity measure for w1 and w2 (e.g., cosine similarity)
+%
 %   f = mean,min,max
+%
 %   weights = the weight for the given concept (e.g., imageability score)
+%
 %   beta = models the impact of rs in the reweighting
 %
 %
 %   MSS:: [semantics.representation.MultimodalSemanticSpace]
 %     This is the multimodal semantic space to be tested.
 %
-%   test:: 
+%   Test:: 
 %     The testing data.
 %
-%   weights::
+%   Weights::
 %     The weights for computing reweightedSim(w1, w2).
 %
-%   channels:: {'text', 'image'}
+%   Channels:: {'text', 'image'}
 %     The channels of the multimodal model.
 %
-%   similarityMeasure:: 'cosine'
+%   SimilarityMeasure:: 'cosine'
 %     The type of similarity measure to be computed.
 %
-%   fMode:: ''
+%   FMode:: ''
 %     The reweighting function f to use for computing reweightedSim(w1, w2).
 %
-%   beta:: []
+%   Beta:: []
 %     The impact factors to use for computing reweightedSim(w1, w2).
 %      
-%   correlationType:: 'Spearman' 
+%   CorrelationType:: 'Spearman' 
 %     The correlation measure to use to compare with the gold standard. 
 %     The available correlation types are Pearson, Kendall or Spearman.
 %
@@ -57,16 +60,16 @@ function [testCorr testedData] = testModel(MSS, test, weights, varargin)
 
 options.channels = {'text', 'image'};
 options.similarityMeasure = 'cosine';
-options.fmode = '';
+options.fMode = '';
 options.beta = [];
 options.correlationType = 'Spearman';
 
 options = vl_argparse(options, varargin);
 
-% check if fmode and beta have been passed as arguments 
-if length(options.fmode) == 0 || isempty(options.beta)
-    if length(options.fmode) == 0
-        error('testModel:arguments_error','A valid fmode must be specified')
+% check if fMode and beta have been passed as arguments 
+if isempty(options.fMode) || isempty(options.beta)
+    if isempty(options.fMode)
+        error('testModel:arguments_error','A valid fMode must be specified')
     end
     if isempty(options.beta)
         error('testModel:arguments_error','A valid beta must be specified')
@@ -108,8 +111,7 @@ for j = 1:numel(options.channels)
             % the similarity score for the given pair
             pairScore = MSS.getWeightedSimilarity(concept1, concept2,...
                 options.similarityMeasure, options.channels{j},... 
-                options.fmode,...
-                [weight1 weight2]);
+                [weight1 weight2], options.fMode);
             
             if pairScore ~= -1
                 % populate the model and the test scores

@@ -1,11 +1,97 @@
 classdef MultimodalSemanticSpace < semantics.representation.GenericSemanticSpace
-    %MULTIMODALSEMANTICSPACE Multimodal semantic space for distributional semantics modeling
+% MULTIMODALSEMANTICSPACE Represents a multimodal distributional semantics model
+%   MULTIMODALSEMANTICSPACE = MULTIMODALSEMANTICSPACE(CONCEPTS, TEXTVECTORS, IMAGEVECTORS) 
+%   returns an instance of the the class MULTIMODALSEMANTICSPACE(). 
+%   The constructor calls also
+%   the method mapConcept2Vector of the superclass GENERICSEMANTICSPACE() which
+%   assign indexes to concept and store them into a hastable (see
+%   GenericSemanticSpace for more details).
+%
+%
+%   PROPERTIES
+%
+%   > Inherited
+%
+%   concepts::
+%     The concepts represented by the multimodal semantic space.
+%
+%   concept2vector::
+%     A mapping form concepts to vectors.
+%
+%   > Class specific
+%
+%   textVectors::
+%     The text-based vector representation of the concepts.
+%
+%   imageVectors::
+%     The image-based vector representation of the concepts.
+%
+%
+%   CONSTRUCTORS
+%
+%   > Class specific
+%
+%   obj = MultimodalSemanticSpace(concepts, textVectors, imageVectors)::
+%      Returns an instance of this class.
+%
+%      [Arguments] 
+%
+%      concepts:      the concepts represented by the multimodal semantic space
+%
+%      textVectors:   the text-based vector representation of the concepts  
+%
+%      imageVectors:  the image-based vector representation of the concepts
+%
+%   METHODS
+%
+%   > Inherited
+%
+%   concept2vector = mapConcept2Vector(concepts)::
+%     Static. Map concepts to their vectors and it is automatically called 
+%     by the constructor of this class. Importantly, it assumes the
+%     concepts being in sorted order. 
+%
+%   > Class specific
+%
+%   similarityScore = getSimilarity(obj, concept1, concept2, similarityMeasure, channel)::
+%      Returns the semantic similarity score between two concepts. If one 
+%      of the two concepts to be compared is not found, it returns -1. 
+%  
+%      [Arguments] 
+%
+%      concept1, concept2:  the two target concepts
+%
+%      similarityMeasure:   the similarity measure (see help PDIST2 for the full list of measures)
+%
+%      channel:             the channel to use for computing the similarity score, it can be 'text' or 'image'
+%
+%   weightedSimilarityScore = getWeightedSimilarity(obj, concept1, concept2, similarityMeasure, channel, conceptWeights, weightingMode)::
+%      Returns the weighted similarity score between two concepts. If one 
+%      of the two concepts to be compared is not found, it returns -1.
+%
+%      [Arguments] 
+%
+%      concept1, concept2:  the two target concepts
+%
+%      similarityMeasure:   the similarity measure (see help PDIST2 for the full list of measures)
+%
+%      channel:             the channel to use for computing the similarity score, it can be 'text' or 'image'
+%
+%      conceptWeights:      the weights for the two concepts
+%
+%      weightingMode:       it specifies the way to mix the two concept weights; it can be 'mean', 'min' or 'max'
+%
+% Authors: A1
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
     
     
     properties
         textVectors
         imageVectors
-        %conceptsAndVectors
     end
     
     methods
@@ -23,9 +109,7 @@ classdef MultimodalSemanticSpace < semantics.representation.GenericSemanticSpace
             dim = size(obj.codebook_,2);
         end
         
-        % Compute the similarity between two target concepts in the semantic space.
-        % You need to specify also the channel ('text' or 'image').
-        % If one of the two concepts to be compared is not found, it returns -1.
+
         function similarityScore = getSimilarity(obj, concept1, concept2, similarityMeasure, channel)
             
             if obj.concept2vector.isKey(concept1) == 1 && obj.concept2vector.isKey(concept2) == 1
@@ -44,11 +128,8 @@ classdef MultimodalSemanticSpace < semantics.representation.GenericSemanticSpace
             end
         end
         
-        % Compute the weighted similarity between two target concepts in the semantic space.
-        % You need to specify also the channel ('text' or 'image'), the
-        % weight mode and the weights.
-        % If one of the two concepts to be compared is not found, it returns -1.
-        function weightedSimilarityScore = getWeightedSimilarity(obj, concept1, concept2, similarityMeasure, channel, weightingMode, conceptWeights)
+
+        function weightedSimilarityScore = getWeightedSimilarity(obj, concept1, concept2, similarityMeasure, channel, conceptWeights, weightingMode)
             
             if obj.concept2vector.isKey(concept1) == 1 && obj.concept2vector.isKey(concept2) == 1
                 weight = 0 ;
