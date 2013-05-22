@@ -1,0 +1,30 @@
+# LIBRARIES
+lib/vlfeat-0.9.16
+
+# Mac OS MATLAB swap files
+*.m~
+
+# Mac OS Finder Poop
+.DS_Store
+
+# Mac OS Thumbnails
+._*
+
+# Mac OS others
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Python complied files
+*.pyc
+
+# Emacs backups
+*~
+
+# Vim swap files
+.*.swp
+
+data/test
+
+doc/api/html
