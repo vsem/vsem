@@ -141,41 +141,18 @@ classdef VsemHistogramExtractor
             obj.pooler = vision.histograms.bovwhistograms.pooling.SPMPooler(poolerInput{:}, obj.encoder);
         end
         
-        function [histogram, objectList] = extractHistogram(obj, image)
-        % extractHistogram histogram extraction method
-        %   extractHistogram(obj, image) extracts a histogram for the image
+        function [histogram, objectList] = extractConceptHistogram(obj, image)
+        % extractConceptHistogram histogram extraction method
+        %   gState(obj, image) extracts a histogram for the image
         %   'image', according to the options set in the
         %   VsemHistogramExtractor object.
                
-        
-            try
-                % extracting annotation when present
-                annotation = image{2};
-                
-                % extracting image data
-                image = imread(image{1});
-                
-                % for images with annotation
-                singleImage = false;
-            catch
-                % extracting image data
-                image = imread(image);
-                
-                % for single histograms (no annotation)
-                singleImage = true;
-            end
-            
-            % standardizing image data
-            image = obj.featureExtractor.standardizeImage(image);
-            
-            % computing features
-            [features, frames] = obj.featureExtractor.compute(image);
-            
-            % shorter output for single images
-            if singleImage
-                histogram = obj.pooler.compute(size(image),features, frames);
-                return
-            end
+
+            % extracting annotation when present
+            annotation = image{2};
+
+            % extracting image path
+            imagePath = image{1};
             
             switch lower(obj.options.localization)
                 case 'global'
@@ -185,7 +162,7 @@ classdef VsemHistogramExtractor
                     objectList = unique(objectList);
                     
                     % computing histogram
-                    histogram = obj.pooler.compute(size(image),features, frames);
+                    histogram = obj.extractImageHistogram(imagePath);
                     
                 case 'surrounding'
                     
@@ -203,13 +180,9 @@ classdef VsemHistogramExtractor
                         
                         % extracting bounding box
                         boundingBox = annotation{2,k};
-                        xmin = boundingBox(1); xmax = boundingBox(2); ymin = boundingBox(3); ymax = boundingBox(4);
-                        
-                        % selecting features
-                        [surroundingFts,surroundingFrms] = getsurroundingFeatures(features, frames, xmin, xmax, ymin, ymax);
                         
                         % computing histogram for the kth object
-                        histogram{k} = obj.pooler.compute(size(image),surroundingFts, surroundingFrms);
+                        histogram{k} = obj.extractImageHistogram(imagePath, 'surrounding', boundingBox);
                     end
                     
                     % standardizing histogram
@@ -231,18 +204,63 @@ classdef VsemHistogramExtractor
                         
                         % extracting bounding box
                         boundingBox = annotation{2,k};
-                        xmin = boundingBox(1); xmax = boundingBox(2); ymin = boundingBox(3); ymax = boundingBox(4);
-                        
-                        % selecting features
-                        [objectFts,objectFrmes] = getobjectFeatures(features, frames, xmin, xmax, ymin, ymax);
                         
                         % computing histogram for the kth object
-                        histogram{k} = obj.pooler.compute([ymax-ymin, xmax-xmin,3],objectFts, objectFrmes);
+                        histogram{k} = obj.extractImageHistogram(imagePath, 'object', boundingBox);
                     end
                     
                     % standardizing histogram
                     histogram = cat(2, histogram{:});
             end
+        end
+        
+        function histogram = extractImageHistogram(obj, imagePath, varargin)
+            
+            % extracting image data
+            image = imread(imagePath);
+            
+            % standardizing image data
+            image = obj.featureExtractor.standardizeImage(image);
+            
+            % computing features
+            [features, frames] = obj.featureExtractor.compute(image);
+            
+            if nargin == 2
+                
+                % image size with no localization
+                imageSize = size(image);
+                
+            elseif nargin == 4
+                
+                % checking for errors in the input
+                assert(any(strcmpi(varargin{1}, {'surrounding', 'object'})), 'Input must be either ''object'' or ''surrounding'' and the localization matrix.');
+                
+                % assigning localization
+                xmin = varargin{2}(1); xmax = varargin{2}(2); ymin = varargin{2}(3); ymax = varargin{2}(4);
+                
+                switch lower(varargin{1})
+                    case 'surrounding'
+                        
+                        % surrounding features and image size
+                        [features, frames] = getsurroundingFeatures(features, frames, xmin, xmax, ymin, ymax);
+                        
+                        imageSize = size(image);
+                    case 'object'
+                        
+                        % object features and image size
+                        [features, frames] = getobjectFeatures(features, frames, xmin, xmax, ymin, ymax);
+                        
+                        imageSize = [ymax-ymin, xmax-xmin,3];
+                end
+            else
+                
+                % checking for invalid input
+                error('Invalid input. Provide the image path and, optionally, localization data.')
+            end
+            
+            % compute histogram
+            histogram = obj.pooler.compute(imageSize, features, frames);
+            
             
             % selects features from the surrounding of the annotation in an image
             function [feats,frames] = getsurroundingFeatures(feats, frames, xmin, xmax, ymin, ymax)
