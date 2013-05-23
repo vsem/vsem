@@ -29,11 +29,11 @@ Several functionalities within the library require some paths
 to be added to Matlab path. To use single portions of the code
 from outside the demos:
 
-	3. Run '+helpers/+startup/vsemStartup.m'.
+	3. Run 'vsemStartup.m'.
 	
 		This can be automatized by adding
 		
-		run(fullfile(vsempath,'+helpers/+startup/vsemStartup.m'))
+		run(fullfile(vsempath,'toolbox/vsemStartup.m'))
 								% where vsempath is VSEM's folder.
 
 		to Matlab 'startup.m' file, usually located in
