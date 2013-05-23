@@ -34,8 +34,8 @@ from outside the demos:
 		This can be automatized by adding
 		
 		run(fullfile(vsempath,'toolbox/vsemStartup.m'))
-								% where vsempath is VSEM's folder.
 
-		to Matlab 'startup.m' file, usually located in
+        where vsempath is VSEM's folder, to Matlab 'startup.m' file, 
+        usually located in
 		
 		fullfile(matlabroot, 'toolbox/local')
