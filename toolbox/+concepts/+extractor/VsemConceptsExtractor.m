@@ -100,7 +100,7 @@ classdef VsemConceptsExtractor
                 waitBar.update(i);
                 
                 % extracting histogram and object list for the ith image
-                [histogram, objectList] = histogramExtractor.extractHistogram(annotatedImages.imageData(i,:));
+                [histogram, objectList] = histogramExtractor.extractConceptHistogram(annotatedImages.imageData(i,:));
                 
                 % updating concept space with the previously extracted data
                 conceptSpace = conceptSpace.update(histogram, objectList);
