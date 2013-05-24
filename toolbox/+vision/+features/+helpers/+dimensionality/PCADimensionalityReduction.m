@@ -69,7 +69,6 @@ classdef PCADimensionalityReduction < handle & vision.features.helpers.dimension
 
                 
                 im = imread(imagesPaths{ii});
-                im = obj.featureExtractor.standardizeImage(im);
                 feats_all = obj.featureExtractor.compute(im);
                 
                 % if a descount limit applies, discard a fraction of features now to

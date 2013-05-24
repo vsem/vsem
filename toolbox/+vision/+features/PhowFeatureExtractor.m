@@ -29,6 +29,9 @@ classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
         end
 
         function [feats, frames] = compute(obj, image)
+            % standardize image 
+            image = obj.standardizeImage(image)
+
 			[frames, feats] = vl_phow(image, 'Verbose', obj.phowConfiguration.verbose, ...
 				'Sizes', obj.phowConfiguration.sizes, 'Fast', obj.phowConfiguration.fast, 'step', obj.phowConfiguration.step, ...
 				'Color', obj.phowConfiguration.color, 'ContrastThreshold', obj.phowConfiguration.contrast_threshold, ...

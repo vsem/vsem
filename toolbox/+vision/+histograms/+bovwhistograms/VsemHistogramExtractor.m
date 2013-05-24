@@ -219,9 +219,6 @@ classdef VsemHistogramExtractor
             % extracting image data
             image = imread(imagePath);
             
-            % standardizing image data
-            image = obj.featureExtractor.standardizeImage(image);
-            
             % computing features
             [features, frames] = obj.featureExtractor.compute(image);
             

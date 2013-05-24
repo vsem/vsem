@@ -85,7 +85,6 @@ classdef KmeansVocabulary < vision.vocabulary.GenericVocabulary
                 waitBar.update(ii);
                 
                 im = imread(imagesPaths{ii});
-                im = featureExtractor.standardizeImage(im);
                 feats_all = featureExtractor.compute(im);
                 
                 % if a descount limit applies, discard a fraction of features now to
