@@ -16,8 +16,8 @@ classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
             'magnif', 6,...
             'float_descriptors', false,...
             'remove_zero', false,... % remove zero vectors
-            'low_proj', [],... % dimensionality reducing projection
-            'rootSift', false); % root Sift, false by default
+            'low_proj', []... % dimensionality reducing projection
+            'rootSift', false);
     end
 
     methods
