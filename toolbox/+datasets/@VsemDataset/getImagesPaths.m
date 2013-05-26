@@ -41,15 +41,21 @@ if nargin > 1
     if strcmpi(subsetType,'fileNames')
         
         % extracting images list and the list of images path was requested for
-        imagesList = {obj.imageData.fileName};
+        imagesPaths = {obj.imageData.filePath};
+        [~, imageFilenames, ~] = cellfun(@fileparts, imagesPaths, ...
+            'UniformOutput', false);
         
-        [~, subsetData, ~] = cellfun(@(x)(fileparts(x)), subsetData, 'UniformOutput',false);
+        [~, subsetData, ~] = cellfun(@(x)(fileparts(x)), subsetData, ...
+            'UniformOutput', false);
+
+        pathIdxs = find(ismember(imageFilenames, subsetData));
         
         % checking for errors on the subset of images
-        assert(all(ismember(subsetData, imagesList)),'Some of the requested images are not in the images folder. Check for spelling or for file location.');
+        assert(length(pathIdxs) == length(subsetData), ...
+            'Some of the requested images are not in the images folder. Check for spelling or for file location.');
         
         % generating paths
-        imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x,'.jpg'])), subsetData, 'UniformOutput',false)';
+        imagesPaths = imagesPaths(pathIdxs)';
         
     elseif strcmpi(subsetType,'conceptNames')
         
@@ -57,14 +63,15 @@ if nargin > 1
         conceptNames = subsetData;
         
         % checking for errors on the subset of concepts
-        assert(all(ismember(conceptNames,obj.conceptList)),'Some selected concepts are not in the list of possible concepts.')
+        assert(all(ismember(conceptNames,obj.conceptList)), ...
+            'Some selected concepts are not in the list of possible concepts.');
         
         % determining the indexes of imageData entries which contain the requested list of concepts
         idxs = cellfun(@(x)(ismember(x(1,:),conceptNames)), {obj.imageData.annotation}, 'UniformOutput', false)';
         idxs = cellfun(@(x)(any(x)), idxs);
         
         % extracting paths for the just determined indexes
-        imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2},[x,'.jpg'])), {obj.imageData(idxs).fileName}, 'UniformOutput', false)';
+        imagesPaths = {obj.imageData(idxs).filePath}';
         
         % loop version
         % i = 1;
@@ -85,7 +92,7 @@ if nargin > 1
         if subsetData > 0
             
             % extracting complete list of images paths and related indexes
-            imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2},[x,'.jpg'])), {obj.imageData.fileName}, 'UniformOutput', false)';
+            imagesPaths = {obj.imageData.filePath}';
             idxs = 1:length(imagesPaths);
             
             % misuse warning
@@ -106,7 +113,7 @@ if nargin > 1
             pause(3);
             
             % images paths for the complete dataset
-            imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2},[x,'.jpg'])), {obj.imageData.fileName}, 'UniformOutput', false)';
+            imagesPaths = {obj.imageData.filePath}';
         end
         
     else
@@ -115,6 +122,6 @@ if nargin > 1
     end
 else
     % images paths for the complete dataset
-    imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2},[x,'.jpg'])), {obj.imageData.fileName}, 'UniformOutput', false)';
+    imagesPaths = {obj.imageData.filePath}';
 end
 end

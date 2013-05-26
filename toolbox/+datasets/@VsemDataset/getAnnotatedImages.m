@@ -45,17 +45,24 @@ if nargin > 1
     if strcmpi(subsetType,'fileNames')
         
         % making a first paths list to check for their existence
-        [~, subsetData, ~] = cellfun(@(x)(fileparts(x)), subsetData, 'UniformOutput',false);
-        checkPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x,'.jpg'])), subsetData, 'UniformOutput',false);
-        % checking for existence
-        assert(all(cellfun(@(x)(exist(x,'file')),checkPaths)),'Some of the requested images are not in the images folder. Check for spelling or for file location.');
+        imagesPaths = {obj.imageData.filePath};
+        [~, imageFilenames, ~] = cellfun(@fileparts, imagesPaths, ...
+            'UniformOutput', false);
         
-        % indexes of the requested entries
-        requestedEntries = ismember({obj.imageData.fileName},subsetData);
+        [~, subsetData, ~] = cellfun(@(x)(fileparts(x)), subsetData, ...
+            'UniformOutput',false);
+
+        pathIdxs = find(ismember(imageFilenames, subsetData));
+
+        requestedPaths = imagesPaths(pathIdxs);
+        
+        % checking for existence
+        assert(all(cellfun(@(x)(exist(x,'file')), requestedPaths)), ...
+            'Some of the requested images are not in the images folder. Check for spelling or for file location.');
         
         % requested image paths and annotation
-        annotatedImages.imageData = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x,'.jpg'])), {obj.imageData(requestedEntries).fileName}, 'UniformOutput', false)';
-        annotatedImages.imageData(:,2) = {obj.imageData(requestedEntries).annotation}';
+        annotatedImages.imageData = requestedPaths;
+        annotatedImages.imageData(:,2) = {obj.imageData(pathIdxs).annotation}';
         
         % requested images concept list
         annotation = cat(2, annotatedImages.imageData{:,2});
@@ -67,7 +74,7 @@ if nargin > 1
         annotatedImages.conceptList = subsetData;
         
         % checking whether all the concepts are in the dataset's concept list
-        assert(all(ismember(annotatedImages.conceptList,obj.conceptList)),'Some selected concepts are not in the list of possible concepts, check for possible objects (dataset.conceptList) or for spelling.')
+        assert(all(ismember(annotatedImages.conceptList,obj.conceptList)),'Some selected concepts are not in the list of possible concepts, check for possible objects (dataset.conceptList) or for spelling.');
         
         % allocating
         annotatedImages.imageData = {};
@@ -86,7 +93,7 @@ if nargin > 1
             end
             
             % storing path for the jth image in the ith position (where i keeps track of wanted images)
-            annotatedImages.imageData{i,1} = fullfile(obj.sourceData{1}{2},[obj.imageData(j).fileName,'.jpg']);
+            annotatedImages.imageData{i,1} = obj.imageData(j).filePath;
             
             % initializing the number of wanted objects
             k = 1;
@@ -128,7 +135,7 @@ if nargin > 1
             idxs = vl_colsubset(idxs, subsetData);
             
             % extracting paths and annotation for the subset of images
-            imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x, '.jpg'])), {obj.imageData(idxs).fileName}, 'UniformOutput', false)';
+            imagesPaths = {obj.imageData(idxs).filePath}';
             annotation = {obj.imageData(idxs).annotation}';
             
             % standardizing output and assigning
@@ -143,7 +150,7 @@ if nargin > 1
             warning('Image limit is not a positive integer: no discount will be applied.');
             
             % proceeding with the extraction of annotated images from the whole dataset
-            imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x, '.jpg'])), {obj.imageData.fileName}, 'UniformOutput', false)';
+            imagesPaths = {obj.imageData.filePath}';
             annotation = {obj.imageData.annotation}';
             
             annotatedImages.imageData = cat(2, imagesPaths, annotation);
@@ -159,7 +166,7 @@ if nargin > 1
 else
     
     % extracting image paths and annotation from the whole dataset
-    imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x, '.jpg'])), {obj.imageData.fileName}, 'UniformOutput', false)';
+    imagesPaths = {obj.imageData.filePath}';
     annotation = {obj.imageData.annotation}';
     
     % assigning to output

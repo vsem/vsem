@@ -20,12 +20,14 @@ function [imageData, conceptList] = prepareImages(obj)
 
     switch lower(obj.datasetOptions.annotationType)
         case 'completeannotation'
+            % TODO: turn regular expression into a parameter
+            filemask = '.*(jpg|gif)';
+            
             % complete list of images from the images database
-            imagesList = dir(fullfile(obj.sourceData{1}{2}, '*.jpg'));
+            imagePaths = listFiles(obj.sourceData{1}{2}, filemask);
 
-            % setting fileName field of imageData
-            [~, fileNames, ~] = cellfun(@(x)(fileparts(x)), {imagesList.name}, 'UniformOutput', false);
-            imageData = struct('fileName', fileNames);
+            % setting filePath field of imageData
+            imageData = struct('filePath', imagePaths);
 
             % settings for progress bar graphics and variables
             text = 'Preparing dataset: ';
@@ -42,8 +44,10 @@ function [imageData, conceptList] = prepareImages(obj)
                 waitBar.update(i);
 
                 % building path for annotation and determining whether such file exists
-                annotationPath = fullfile(obj.sourceData{2}{2}, [imageData(i).fileName, '.xml']);
-                assert(any(exist(annotationPath, 'file')), 'No annotation file %s was located', annotationPath);
+                [~, filename, ~] = fileparts(imageData(i).filePath);
+                annotationPath = fullfile(obj.sourceData{2}{2}, [filename '.xml']);
+                assert(any(exist(annotationPath, 'file')), ...
+                    'No annotation file %s was located', annotationPath);
 
                 % extracting annotation
                 annotationFile = datasets.helpers.readXML(annotationPath);
@@ -86,21 +90,20 @@ function [imageData, conceptList] = prepareImages(obj)
 
         case 'conceptfile'
 
-
             % if the input is a file, open, read the file and extract annotation from it
             annotationFile = fopen(obj.sourceData{2}{2});
-            annotation = textscan(annotationFile,'%s','delimiter', '\n'); fclose(annotationFile);
-            annotation = cellfun(@(x)(textscan(x,'%s','delimiter', ' ')), annotation{:}, 'UniformOutput', false);
-            annotation = cat(1, annotation{:});
+            lines = textscan(annotationFile,'%s','delimiter', '\n');
+            fclose(annotationFile);
+            lines = cellfun(@(x)(textscan(x,'%s','delimiter', ' ')), ...
+                lines{:}, 'UniformOutput', false);
+            lines = cat(1, lines{:});
 
             % initializing concept list and determining the number of concepts
-            conceptsNumber = length(annotation);
+            conceptsNumber = length(lines);
             conceptList = {};
 
-
             % initializing
-            imagesList = {};
-            imageData = struct('fileName', {}, 'annotation', {});
+            imageData = struct('filePath', {}, 'annotation', {});
 
             % setting for progress bar graphics and variables
             text = 'Preparing dataset: ';
@@ -113,46 +116,36 @@ function [imageData, conceptList] = prepareImages(obj)
                 % updating waitbar
                 waitBar.update(i);
 
-
                 % extracting annotation and updating concept list
-                conceptName = annotation{i}{1};
+                conceptName = lines{i}{1};
                 conceptList{end+1,1} = conceptName;
 
-                imagesPaths = annotation{i}(2:end);
+                % filepaths of images under this concept
+                imagePaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, x)), ...
+                    lines{i}(2:end), 'UniformOutput', false);
+
+                usedImages = {imageData.filePath};
 
                 % indexes for images that are and are not already in the output list
-                unusedImagesIdxs = ismember(imagesPaths, imagesList) == 0;
-                usedImagesIdxs = find(ismember(imagesList, imagesPaths));
-
-                % list of images not yet assigned to the imageData structure
-                [~, unusedImagesList, ~] = cellfun(@(x)(fileparts(x)), imagesPaths(unusedImagesIdxs), 'UniformOutput',false);
+                newImageIdxs = ismember(imagePaths, usedImages) == 0;
+                usedImageIdxs = find(ismember(usedImages, imagePaths));
 
                 % for 'conceptFile' annotation type, checking that the images in the annotation file do exist on the provided path
-                checkPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x,'.jpg'])), unusedImagesList, 'UniformOutput',false);
-                assert(all(cellfun(@(x)(exist(x,'file')),checkPaths)), 'Some of the images listed in the annotation file are missing from the images folder, possible spelling error or deleted image.');
-
-                % adding new images to and standardizing imagesList
-                imagesList = cat(1, imagesList, imagesPaths(unusedImagesIdxs));
+                assert(all(cellfun(@(x)(exist(x,'file')), imagePaths)), ...
+                    'Some of the images listed in the annotation file are missing from the images folder, possible spelling error or deleted image.');
 
                 % updating imageData with the new images
-                imageData(end+1:end+length(unusedImagesList)) = struct('fileName', unusedImagesList, 'annotation', {{conceptName}});
-
-                % loop version
-                % for j = 1:length(unusedImagesList)
-                %     imageData(end+1).fileName = unusedImagesList{j};
-                %     imageData(end).annotation = {conceptName};
-                % end
+                imageData = [imageData; ... 
+                    struct('filePath', imagePaths(newImageIdxs), ...
+                    'annotation', {{conceptName}})];
 
                 % updating annotation for and assigning back those entries which are already in imageData
-                annotations = {imageData(usedImagesIdxs).annotation};
-                annotations = cellfun(@(x)(cat(2, x, conceptName)), annotations, 'UniformOutput', false);
+                annotations = {imageData(usedImageIdxs).annotation};
+                annotations = cellfun(@(x)(cat(2, x, conceptName)), ...
+                    annotations, 'UniformOutput', false);
 
-                imageData(usedImagesIdxs) = struct('fileName', {imageData(usedImagesIdxs).fileName}, 'annotation', annotations);
-
-                % loop version
-                % for j = 1:length(usedImagesIdxs)
-                %     imageData(usedImagesIdxs(j)).annotation{end+1} = conceptName;   % direct assignment, as in line 151
-                % end
+                imageData(usedImageIdxs) = struct('filePath', ...
+                    {imageData(usedImageIdxs).filePath}, 'annotation', annotations);
 
                 % handle for cancel button on progress bar
                 if ~waitBar.textualVersion && getappdata(waitBar.bar,'canceling')
@@ -164,8 +157,10 @@ function [imageData, conceptList] = prepareImages(obj)
             conceptList = sort(conceptList);
 
         case 'conceptfolder'
-
-
+            
+            % TODO: turn regular expression into a parameter
+            filemask = '.*(jpg|gif)';
+            
             % if the input is a folder with one subfolder for each tag,
             % determining concept list from these along with their number
             conceptFolders = dir(obj.sourceData{1}{2});
@@ -177,8 +172,7 @@ function [imageData, conceptList] = prepareImages(obj)
             conceptsNumber = length(conceptList);
 
             % initializing
-            imagesList = {};
-            imageData = struct('fileName', {}, 'annotation', {});
+            imageData = struct('filePath', {}, 'annotation', {});
 
             % setting for progress bar graphics and variables
             text = 'Preparing dataset: ';
@@ -195,39 +189,34 @@ function [imageData, conceptList] = prepareImages(obj)
                 % extracting concept name and associated images
                 conceptName = conceptList{i};
 
-                imagesPaths = dir(fullfile(obj.sourceData{1}{2}, conceptName, '*.jpg'));
-                imagesPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, x)), {imagesPaths.name}, 'UniformOutput', false)';
+                imagePaths = listFiles(fullfile(obj.sourceData{1}{2}, ...
+                    conceptName), filemask);
+
+                [~, conceptImageNames, ~] = cellfun(@fileparts, imagePaths, ...
+                    'UniformOutput', false);
+                [~, usedImageNames, ~]  = cellfun(@fileparts, {imageData.filePath}, ...
+                    'UniformOutput', false);
 
                 % indexes for images that are and are not already in the output list
-                unusedImagesIdxs = ismember(imagesPaths, imagesList) == 0;
-                usedImagesIdxs = find(ismember(imagesList, imagesPaths));
+                newImageIdxs = ismember(conceptImageNames, usedImageNames) == 0;
+                usedImageIdxs = find(ismember(usedImageNames, conceptImageNames));
 
-                % list of images not yet assigned to the imageData structure
-                [~, unusedImagesList, ~] = cellfun(@(x)(fileparts(x)), imagesPaths(unusedImagesIdxs), 'UniformOutput',false);
-
-
-                % adding new images to and standardizing imagesList
-                imagesList = cat(1, imagesList, imagesPaths(unusedImagesIdxs));
-
+                % paths of new images
+                newImagePaths = imagePaths(newImageIdxs);
+                
                 % updating imageData with the new images
-                imageData(end+1:end+length(unusedImagesList)) = struct('fileName', unusedImagesList, 'annotation', {{conceptName}});
+                imageData = [imageData; ...
+                    struct('filePath', imagePaths(newImageIdxs), ...
+                    'annotation', {{conceptName}})];
 
-                % loop version
-                % for j = 1:length(unusedImagesList)
-                %     imageData(end+1).fileName = unusedImagesList{j};
-                %     imageData(end).annotation = {conceptName};
-                % end
+                % updating annotation for and assigning back those
+                % entries which are already in imageData
+                annotations = {imageData(usedImageIdxs).annotation};
+                annotations = cellfun(@(x)(cat(2, x, conceptName)), ...
+                    annotations, 'UniformOutput', false);
 
-                % updating annotation for and assigning back those entries which are already in imageData
-                annotations = {imageData(usedImagesIdxs).annotation};
-                annotations = cellfun(@(x)(cat(2, x, conceptName)), annotations, 'UniformOutput', false);
-
-                imageData(usedImagesIdxs) = struct('fileName', {imageData(usedImagesIdxs).fileName}, 'annotation', annotations);
-
-                % loop version
-                % for j = 1:length(usedImagesIdxs)
-                %     imageData(usedImagesIdxs(j)).annotation{end+1} = conceptName;   % direct assignment, as in line 151
-                % end
+                imageData(usedImageIdxs) = struct('filePath', ...
+                    {imageData(usedImageIdxs).filePath}, 'annotation', annotations);
 
                 % handle for cancel button on progress bar
                 if ~waitBar.textualVersion && getappdata(waitBar.bar,'canceling')
@@ -240,21 +229,26 @@ function [imageData, conceptList] = prepareImages(obj)
 
         case 'imagefile'
 
-            % opening, reading the annotation file and extracting annotation and images list from it
+            % opening, reading the annotation file and extracting annotation 
+            % and images list from it
             annotationFile = fopen(obj.sourceData{2}{2});
-            annotation = textscan(annotationFile,'%s','delimiter', '\n'); fclose(annotationFile);
-            annotation = cellfun(@(x)(textscan(x,'%s','delimiter', ' ')), annotation{:}, 'UniformOutput', false);
+            annotation = textscan(annotationFile,'%s','delimiter', '\n');
+            fclose(annotationFile);
+            annotation = cellfun(@(x)(textscan(x,'%s','delimiter', ' ')), ...
+                annotation{:}, 'UniformOutput', false);
             annotation = cat(1, annotation{:});
 
-            [~, imagesList, ~] = cellfun(@(x)(fileparts(x{1})), annotation, 'UniformOutput',false);
+            imageData = struct('filePath', cellfun(@(x) ...
+                (fullfile(obj.sourceData{1}{2},x{1})), annotation, ...
+                'UniformOutput', false));
 
-            % checking that the images in the annotation file do exist on the provided path
-            checkPaths = cellfun(@(x)(fullfile(obj.sourceData{1}{2}, [x,'.jpg'])), imagesList, 'UniformOutput',false);
-            assert(all(cellfun(@(x)(exist(x,'file')),checkPaths)), 'Some of the images listed in the annotation file are missing from the images folder, possible spelling error or deleted image.');
+            % checking that the images in the annotation file do exist on the 
+            % provided path
+            assert(all(cellfun(@(x)(exist(x,'file')),{imageData.filePath})), ...
+                'Some of the images listed in the annotation file are missing from the images folder, possible spelling error or deleted image.');
 
             % initializing
             conceptList = {};
-            imageData = struct('fileName', imagesList);
 
             % setting for progress bar graphics and variables
             text = 'Preparing dataset: ';
@@ -287,12 +281,12 @@ function [imageData, conceptList] = prepareImages(obj)
 
         case 'descfiles'
 
-            % complete list of images from the images database
-            imagesList = dir(fullfile(obj.sourceData{1}{2}, '*.jpg'));
-
-            % setting fileName field of imageData
-            [~, fileNames, ~] = cellfun(@(x)(fileparts(x)), {imagesList.name}, 'UniformOutput', false);
-            imageData = struct('fileName', fileNames);
+            % TODO: turn regular expression into a parameter
+            filemask = '.*(jpg|gif)';
+            
+            % read all images in the image folder
+            imageData  = struct('filePath', ...
+                listFiles(obj.sourceData{1}{2}, filemask));
 
             % settings for progress bar graphics and variables
             text = 'Preparing dataset: ';
@@ -309,8 +303,9 @@ function [imageData, conceptList] = prepareImages(obj)
                 waitBar.update(i);
 
                 % building path for annotation and determining whether such file exists
+                [~ , filename, ~]  = fileparts(imageData(i).filePath);
                 annotationPath = fullfile(obj.sourceData{2}{2}, ...
-                    [imageData(i).fileName, '.jpg.desc']);
+                    [filename '.desc']);
                 assert(any(exist(annotationPath, 'file')), ...
                     'No annotation file %s was located', annotationPath);
 
@@ -335,5 +330,20 @@ function [imageData, conceptList] = prepareImages(obj)
             % sorting concepts
             conceptList = sort(conceptList);
 
-        end
-    end
+    end % switch
+
+    function filelist = listFiles(directory, mask)
+        % return list of full paths to files in a directory 
+        % whose filenames match the given mask
+
+        filelist = dir(directory); % list folder content
+        filelist = {filelist([filelist.isdir] == 0).name}; % keep only files
+        filelist = regexpi(filelist, mask,'match'); % match filenames
+        % remove filenames that didn't match and transpose to make
+        % a Nx1 cell array
+        filelist = [filelist{:}]';
+        filelist = cellfun(@(x)(fullfile(directory, x)), filelist, ...
+            'UniformOutput', false);
+    end % readFiles
+        
+end % prepareImages
