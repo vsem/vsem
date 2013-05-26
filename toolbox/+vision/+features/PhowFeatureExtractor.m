@@ -1,7 +1,7 @@
 classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
-% PhowFeatureExtractor Feature extractor for PHOW features
-%
-%   For help, see help vl_phow
+    % PhowFeatureExtractor Feature extractor for PHOW features
+    %
+    %   For help, see help vl_phow
 
     properties
         % properties documented on vl_phow page in vl_feat docs
@@ -30,31 +30,31 @@ classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
 
         function [feats, frames] = compute(obj, image)
             % standardize image 
-            image = obj.standardizeImage(image)
+            image = obj.standardizeImage(image);
 
-			[frames, feats] = vl_phow(image, 'Verbose', obj.phowConfiguration.verbose, ...
-				'Sizes', obj.phowConfiguration.sizes, 'Fast', obj.phowConfiguration.fast, 'step', obj.phowConfiguration.step, ...
-				'Color', obj.phowConfiguration.color, 'ContrastThreshold', obj.phowConfiguration.contrast_threshold, ...
-				'WindowSize', obj.phowConfiguration.window_size, 'Magnif', obj.phowConfiguration.magnif, ...
-				'FloatDescriptors', obj.phowConfiguration.float_descriptors);
-			feats = single(feats);
-            
+            [frames, feats] = vl_phow(image, 'Verbose', obj.phowConfiguration.verbose, ...
+                'Sizes', obj.phowConfiguration.sizes, 'Fast', obj.phowConfiguration.fast, 'step', obj.phowConfiguration.step, ...
+                'Color', obj.phowConfiguration.color, 'ContrastThreshold', obj.phowConfiguration.contrast_threshold, ...
+                'WindowSize', obj.phowConfiguration.window_size, 'Magnif', obj.phowConfiguration.magnif, ...
+                'FloatDescriptors', obj.phowConfiguration.float_descriptors);
+            feats = single(feats);
+
             if obj.phowConfiguration.rootSift
                 % calculate root sift
                 feats = sqrt(feats/sum(feats));
             end
-            
-            if obj.phowConfiguration.remove_zero
-				% remove zero features
-				nz_feat = any(feats, 1);
 
-				feats = feats(:, nz_feat);
-				frames = frames(:, nz_feat);
+            if obj.phowConfiguration.remove_zero
+                % remove zero features
+                nz_feat = any(feats, 1);
+
+                feats = feats(:, nz_feat);
+                frames = frames(:, nz_feat);
             end
 
             if ~isempty(obj.phowConfiguration.low_proj)
-				% dimensionality reduction
-				feats = obj.phowConfiguration.low_proj * feats;        
+                % dimensionality reduction
+                feats = obj.phowConfiguration.low_proj * feats;        
             end
         end
     end
