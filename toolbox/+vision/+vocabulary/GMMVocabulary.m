@@ -94,8 +94,7 @@ classdef GMMVocabulary < handle & vision.vocabulary.GenericVocabulary
                 % waitBar.update(pfImcount-ii+1); % parfor version
                 waitBar.update(ii);
                 
-                im = imread(imagesPaths{ii});
-                feats_all = featureExtractor.compute(im);
+                feats_all = featureExtractor.compute(imagesPaths{ii});
                 
                 % if a descount limit applies, discard a fraction of features now to
                 % save memory
@@ -105,7 +104,7 @@ classdef GMMVocabulary < handle & vision.vocabulary.GenericVocabulary
                 else
                     feats{ii} = feats_all;
                 end
-            end
+       end % image iteration
                         
             clear waitBar feats_all;
             % concatenate features into a single matrix
