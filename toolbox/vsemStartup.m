@@ -13,8 +13,8 @@ function path = vsemStartup(varargin)
 % the terms of the BSD license (see the COPYING file).
 
 % Get the actual path 
-[a,b,c] = fileparts(mfilename('fullpath'));
-[a,b,c] = fileparts(a);
+[a,~,~] = fileparts(mfilename('fullpath'));
+[a,~,~] = fileparts(a);
 root = a;
 
 % Add VSEM to the matlab path
