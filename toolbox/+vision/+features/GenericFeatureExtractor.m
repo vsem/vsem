@@ -14,17 +14,19 @@ classdef GenericFeatureExtractor < handle
     
     methods (Static)
         function image = readImage(imagePath)
-            % Reads an image at the given file path. It also converts 
-            % indexed images to RGB images.
-            imageinfo = imfinfo(imagePath);
-            if strcmp(imageinfo(1).ColorType, 'indexed')
-                % If it's an animated GIF, take only the first frame
-                [image, map] = imread(imagePath, 'frames', 1);
-                % Do the conversion to an RGB image
-                image = ind2rgb(image, map);
-            else
-                image = imread(imagePath);
-            end
+            % Reads an image at the given file path.
+            [~, ~, ext] = fileparts(imagePath);
+            
+            switch lower(ext)
+                case 'gif'
+                    % frames=1: take only the first frame if it's
+                    % an animated GIF
+                    [image, map] = imread(imagePath, 'frames', 1);
+                    % Do the conversion to an RGB image
+                    image = ind2rgb(image, map);
+                otherwise
+                    image = imread(imagePath);
+            end % switch
         end % readImage
         
         function image = standardizeImage(image)
