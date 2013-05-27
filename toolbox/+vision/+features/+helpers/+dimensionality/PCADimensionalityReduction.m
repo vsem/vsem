@@ -68,8 +68,7 @@ classdef PCADimensionalityReduction < handle & vision.features.helpers.dimension
                 waitBar.update(ii);
 
                 
-                im = imread(imagesPaths{ii});
-                feats_all = obj.featureExtractor.compute(im);
+                feats_all = obj.featureExtractor.compute(imagesPaths{ii});
                 
                 % if a descount limit applies, discard a fraction of features now to
                 % save memory
