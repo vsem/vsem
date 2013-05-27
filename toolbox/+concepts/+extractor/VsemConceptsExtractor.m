@@ -98,13 +98,17 @@ classdef VsemConceptsExtractor
                 
                 % updating waitbar
                 waitBar.update(i);
-                
-                % extracting histogram and object list for the ith image
-                [histogram, objectList] = histogramExtractor.extractConceptHistogram(annotatedImages.imageData(i,:));
-                
-                % updating concept space with the previously extracted data
-                conceptSpace = conceptSpace.update(histogram, objectList);
-            end
+                try 
+                    % extracting histogram and object list for the ith image
+                    [histogram, objectList] = histogramExtractor.extractConceptHistogram(annotatedImages.imageData(i,:));
+                    
+                    % updating concept space with the previously extracted data
+                    conceptSpace = conceptSpace.update(histogram, objectList);
+                catch
+                    fprintf(1, 'Error reading file: %s\n', ...
+                        annotatedImages.imageData(i,:));
+                end
+            end % image iteration
             
             % checking for sub bin normalization
             if ~strcmpi(obj.extractorConfiguration.subbin_norm_type, 'none')
