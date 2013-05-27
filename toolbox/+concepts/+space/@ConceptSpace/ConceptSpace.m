@@ -62,12 +62,15 @@ classdef ConceptSpace
     methods
         function obj = ConceptSpace(conceptList, conceptMatrix, varargin)
             
-            % parsing aggregation function, storing it as protected property
+            % parsing functions, storing them as protected properties
             [obj.options, varargin] = vl_argparse(obj.options, varargin);
             obj.aggregatorFunction = obj.options.aggregatorFunction;
+            obj.reweightingFunction = obj.options.reweightingFunction;
+            obj.reducingFunction = obj.options.reducingFunction;
             
             % checking for 'readFromFile' option
             if ~isempty(varargin)
+                keyboard
                 if strcmpi(varargin{1}, 'readfromfile')
                     
                     % extracting file name and features number from input
@@ -191,6 +194,44 @@ classdef ConceptSpace
                 % checking for invalid input
                 error('Invalid input argument. Select a single concept or a cell array of concepts. Default: complete matrix.')
             end
+        end
+        
+        function save(obj, varargin)
+        % save concept space saving facility
+        %   save(obj, 'optionValue') saves the concept space in the current
+        %   folder or in another folder, specified in the 'optionValue'
+        %   field.
+            
+            % retrieving needed variables
+            conceptList = obj.getConceptList;
+            conceptMatrix = obj.getConceptMatrix;
+            options = obj.options;
+            
+            % checking for saving path and saving
+            if ~isempty(varargin)
+                save(fullfile(varargin{:},'conceptSpace'), 'conceptList', 'conceptMatrix', 'options');
+                return
+            end
+            
+            save('conceptSpace', 'conceptList', 'conceptMatrix', 'options')
+        end
+    end
+    
+    methods (Static)
+        function obj = load(conceptSpacePath)
+        % load concept space loading facility
+        %   load(conceptSpacePath) loads the concept space specified in the
+        %   input. In order for this method to work, one has to launch
+        %   vsemStartup first.
+        
+            % loading file
+            load(conceptSpacePath)
+            
+            % converting options structure to cell array
+            options = [fieldnames(options), struct2cell(options)]';
+            
+            % building concept space
+            obj = concepts.space.ConceptSpace(conceptList', conceptMatrix, options{:});
         end
     end
 end
