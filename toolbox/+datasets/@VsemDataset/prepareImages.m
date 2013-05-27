@@ -20,11 +20,8 @@ function [imageData, conceptList] = prepareImages(obj)
 
     switch lower(obj.datasetOptions.annotationType)
         case 'completeannotation'
-            % TODO: turn regular expression into a parameter
-            filemask = '.*(jpg|gif)';
-            
             % complete list of images from the images database
-            imagePaths = listFiles(obj.sourceData{1}{2}, filemask);
+            imagePaths = listFiles(obj.sourceData{1}{2}, obj.filemask);
 
             % setting filePath field of imageData
             imageData = struct('filePath', imagePaths);
@@ -157,10 +154,6 @@ function [imageData, conceptList] = prepareImages(obj)
             conceptList = sort(conceptList);
 
         case 'conceptfolder'
-            
-            % TODO: turn regular expression into a parameter
-            filemask = '.*(jpg|gif)';
-            
             % if the input is a folder with one subfolder for each tag,
             % determining concept list from these along with their number
             conceptFolders = dir(obj.sourceData{1}{2});
@@ -190,7 +183,7 @@ function [imageData, conceptList] = prepareImages(obj)
                 conceptName = conceptList{i};
 
                 imagePaths = listFiles(fullfile(obj.sourceData{1}{2}, ...
-                    conceptName), filemask);
+                    conceptName), obj.filemask);
 
                 [~, conceptImageNames, ~] = cellfun(@fileparts, imagePaths, ...
                     'UniformOutput', false);
@@ -280,13 +273,9 @@ function [imageData, conceptList] = prepareImages(obj)
             conceptList = sort(conceptList);
 
         case 'descfiles'
-
-            % TODO: turn regular expression into a parameter
-            filemask = '.*(jpg|gif)';
-            
             % read all images in the image folder
             imageData  = struct('filePath', ...
-                listFiles(obj.sourceData{1}{2}, filemask));
+                listFiles(obj.sourceData{1}{2}, obj.filemask));
 
             % settings for progress bar graphics and variables
             text = 'Preparing dataset: ';

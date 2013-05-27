@@ -79,6 +79,9 @@ classdef VsemDataset
         conceptList
         datasetOptions = struct(...
             'annotationType', 'completeAnnotation');
+        % TODO: turn filemask into a dataset option
+        % with default value
+        filemask = '.*(jpg|gif)';
     end
     
     properties (Constant, Hidden)
