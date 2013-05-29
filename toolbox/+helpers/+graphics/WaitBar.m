@@ -31,7 +31,7 @@ classdef WaitBar < handle
         bar
         text
         processedItems
-        textualVersion = false;
+        textualVersion = true;
     end
     
     properties (Constant, Hidden)
