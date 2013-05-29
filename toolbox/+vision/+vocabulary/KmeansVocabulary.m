@@ -83,27 +83,19 @@ classdef KmeansVocabulary < vision.vocabulary.GenericVocabulary
                 % updates waitbar
                 % waitBar.update(pfImcount-ii+1); % parfor version
                 waitBar.update(ii);
-               
-                try
-                    feats_all = featureExtractor.compute(imagesPaths{ii});
                 
-                    % if a descount limit applies, discard a fraction of features now to
-                    % save memory
-                    if obj.kmeansConfiguration.descount_limit > 0
-                        feats{ii} = vl_colsubset(feats_all, ...
-                            img_descount_limit);
-                    else
-                        feats{ii} = feats_all;
-                    end
-                catch ME
-                    switch ME.identifier
-                        case 'VSEM:FeatExt'
-                            fprintf(1, '%s\n', ME.message);
-                        otherwise
-                            fprintf(1, 'Error reading file: %s\n', imagesPaths{ii});
-                    end
-                end % try-catch block
-            end % image iteration
+                im = imread(imagesPaths{ii});
+                feats_all = featureExtractor.compute(im);
+                
+                % if a descount limit applies, discard a fraction of features now to
+                % save memory
+                if obj.kmeansConfiguration.descount_limit > 0
+                    feats{ii} = vl_colsubset(feats_all, ...
+                        img_descount_limit);
+                else
+                    feats{ii} = feats_all;
+                end
+            end
             
             clear waitBar feats_all;
             % concatenate features into a single matrix

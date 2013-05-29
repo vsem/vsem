@@ -216,8 +216,11 @@ classdef VsemHistogramExtractor
         
         function histogram = extractImageHistogram(obj, imagePath, varargin)
             
+            % extracting image data
+            image = imread(imagePath);
+            
             % computing features
-            [features, frames] = obj.featureExtractor.compute(imagePath);
+            [features, frames] = obj.featureExtractor.compute(image);
             
             if nargin == 2
                 
