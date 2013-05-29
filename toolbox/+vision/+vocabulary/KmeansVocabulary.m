@@ -95,9 +95,14 @@ classdef KmeansVocabulary < vision.vocabulary.GenericVocabulary
                     else
                         feats{ii} = feats_all;
                     end
-                catch
-                    fprintf(1, 'Error reading file: %s\n', imagesPaths{ii});
-                end
+                catch ME
+                    switch ME.identifier
+                        case 'VSEM:FeatExt'
+                            fprintf(1, '%s\n', ME.message);
+                        otherwise
+                            fprintf(1, 'Error reading file: %s\n', imagesPaths{ii});
+                    end
+                end % try-catch block
             end % image iteration
             
             clear waitBar feats_all;

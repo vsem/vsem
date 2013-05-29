@@ -67,18 +67,27 @@ classdef PCADimensionalityReduction < handle & vision.features.helpers.dimension
                 % waitBar.update(pfImcount-ii+1); % parfor version
                 waitBar.update(ii);
 
-                
-                feats_all = obj.featureExtractor.compute(imagesPaths{ii});
-                
-                % if a descount limit applies, discard a fraction of features now to
-                % save memory
-                if obj.pcaConfiguration.descount_limit > 0
-                    feats{ii} = vl_colsubset(feats_all, ...
-                        img_descount_limit);
-                else
-                    feats{ii} = feats_all;
-                end
-                
+                try
+                    feats_all = obj.featureExtractor.compute(imagesPaths{ii});
+                    
+                    % if a descount limit applies, discard a fraction of features now to
+                    % save memory
+                    if obj.pcaConfiguration.descount_limit > 0
+                        feats{ii} = vl_colsubset(feats_all, ...
+                            img_descount_limit);
+                    else
+                        feats{ii} = feats_all;
+                    end
+                catch ME
+                    switch ME.identifier
+                        case 'VSEM:FeatExt'
+                            fprintf(1, '%s\n', ME.message);
+                        otherwise
+                            fprintf(1, 'Error reading file: %s\n', ...
+                                imagesPaths{ii});
+                    end
+                end % try-catch block
+
                 if ~waitBar.textualVersion && getappdata(waitBar.bar,'canceling')
                     error('Interrupted by the user.\n');
                 end
