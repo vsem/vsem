@@ -100,14 +100,20 @@ classdef VsemConceptsExtractor
                 waitBar.update(i);
                 try 
                     % extracting histogram and object list for the ith image
-                    [histogram, objectList] = histogramExtractor.extractConceptHistogram(annotatedImages.imageData(i,:));
+                    [histogram, objectList] = histogramExtractor.extractConceptHistogram(...
+                        annotatedImages.imageData(i,:));
                     
                     % updating concept space with the previously extracted data
                     conceptSpace = conceptSpace.update(histogram, objectList);
-                catch
-                    fprintf(1, 'Error reading file: %s\n', ...
-                        annotatedImages.imageData(i,:));
-                end
+                catch ME
+                    switch ME.identifier
+                        case 'VSEM:FeatExt'
+                            fprintf(1, '%s\n', ME.message);
+                        otherwise
+                            fprintf(1, 'Error reading file: %s\n', ...
+                                annotatedImages.imageData{i,1});
+                    end
+                end % try-catch block
             end % image iteration
             
             % checking for sub bin normalization
