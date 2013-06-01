@@ -24,7 +24,9 @@ function code = encode(obj, feats)
 
     % Apply encoding ------------------------------------------------------
     
-    disp(size(feats));
+    % display not needed
+    % disp(size(feats));
+
     % tic;
     code = obj.fc_.encode(feats);
     % toc;
