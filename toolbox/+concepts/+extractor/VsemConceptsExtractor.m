@@ -58,7 +58,8 @@ classdef VsemConceptsExtractor
             assert(ismember(obj.extractorConfiguration.kermap, obj.kernelMap), 'Kernel map must be ''homker'', ''hellinger'' or ''none''.');
         end
         
-        function conceptSpace = extractConcepts(obj, dataset, histogramExtractor, varargin)
+        function conceptSpace = extractConcepts(obj, histogramExtractor, ...
+                imagePaths, annotations, conceptList)
         % extractConcepts concept extractor main utility
         %   extractConcepts(obj, dataset, histogramExtractor, 'optionName',
         %   'optionValue') builds a concept space from the 'dataset'
@@ -71,25 +72,25 @@ classdef VsemConceptsExtractor
         %   extractConcepts uses the dataset getAnnotatedImages method,
         %   which is the only recipient of any additional option. See help
         %   for getAnnotatedImages method to review available options.
-        
-            
-            % getting the list of images and related annotation to build
-            % the concept space from
-            annotatedImages = dataset.getAnnotatedImages(varargin{:});
-            
+
+            % Check if we have the same number of images and corresponding tags
+            assert(length(imagePaths) == length(annotations), ...
+                'Number of images does not match the number of annotations');
+           
             % initializing concept matrix with pooling output dimension
-            conceptMatrix = zeros(histogramExtractor.pooler.get_output_dim, length(annotatedImages.conceptList));
+            conceptMatrix = zeros(histogramExtractor.pooler.get_output_dim, ...
+                length(conceptList));
             
             % initializing concept space
-            conceptSpace = concepts.space.ConceptSpace(annotatedImages.conceptList, conceptMatrix);
+            conceptSpace = concepts.space.ConceptSpace(conceptList, conceptMatrix);
             
             % settings for progress bar graphics and variables
             text = 'Extracting concepts: ';
             barColor = [0.76 0.24 0.45];
-            waitBar = helpers.graphics.WaitBar(length(annotatedImages.imageData), text, barColor);
+            waitBar = helpers.graphics.WaitBar(length(imagePaths), text, barColor);
             
             % extracting concepts over the whole selected set of images
-            for i = 1:size(annotatedImages.imageData, 1)
+            for i = 1:size(imagePaths, 1)
                 
                 % handle for cancel button on progress bar
                 if ~waitBar.textualVersion && getappdata(waitBar.bar,'canceling')
@@ -101,7 +102,7 @@ classdef VsemConceptsExtractor
                 try 
                     % extracting histogram and object list for the ith image
                     [histogram, objectList] = histogramExtractor.extractConceptHistogram(...
-                        annotatedImages.imageData{i,1}, annotatedImages.imageData{i,2});
+                        imagePaths{i}, annotations{i});
                     
                     % updating concept space with the previously extracted data
                     conceptSpace = conceptSpace.update(histogram, objectList);
@@ -110,8 +111,7 @@ classdef VsemConceptsExtractor
                         case 'VSEM:FeatExt'
                             fprintf(1, '%s\n', ME.message);
                         otherwise
-                            fprintf(1, 'Error reading file: %s\n', ...
-                                annotatedImages.imageData{i,1});
+                            fprintf(1, 'Error reading file: %s\n', imagePaths{i});
                     end
                 end % try-catch block
             end % image iteration

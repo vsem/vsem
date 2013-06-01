@@ -31,10 +31,10 @@ if strcmpi(configuration.demoType, 'tiny')
     configuration.vocabularySize = 25;
     % number of images to be used in the creation of visual vocabulary;
     % if limit < 1, no discount is applied
-    configuration.vocabularyImageLimit = 40;
+    configuration.vocabularyImageLimit = 0;
     % number of images to calculate the concept representation from; if
     % limit < 1, no discount is applied
-    configuration.conceptImageLimit = 15;
+    configuration.conceptImageLimit = 45;
     configuration.descriptorDimension = 128;
 end
 
@@ -48,6 +48,18 @@ end
 dataset = datasets.VsemDataset(configuration.imagesPath, 'annotationFolder',...
     configuration.annotationPath);
 
+if strcmpi(configuration.demoType, 'tiny')
+    annotatedImages = dataset.getAnnotatedImages('imageLimit', ...
+        configuration.conceptImageLimit);
+else
+    annotatedImages = dataset.getAnnotatedImages();
+end
+
+imagePaths = annotatedImages.imageData(:,1);
+annotations = annotatedImages.imageData(:,2);
+conceptList = annotatedImages.conceptList;
+clear annotatedImages;
+
 % featureExtractor object creation
 featureExtractor = vision.features.PhowFeatureExtractor();
 
@@ -56,7 +68,7 @@ if configuration.descriptorDimension ~= 128
     pca = vision.features.helpers.dimensionality.PCADimensionalityReduction(...
         featureExtractor, configuration.descriptorDimension);
     featureExtractor.phowConfiguration.low_proj = ...
-        pca.train(dataset.getImagesPaths());
+        pca.train(imagePaths);
 end
 
 % visual vocabulary generator object and visual vocabulary creation
@@ -71,8 +83,7 @@ else
         configuration.vocabularySize);
 end
 
-vocabulary = GMMVocabulary.trainVocabulary(dataset.getImagesPaths(), ...
-    featureExtractor);
+vocabulary = GMMVocabulary.trainVocabulary(imagePaths, featureExtractor);
 
 % histogram and concept extractor objects creation and concept extraction
 histogramExtractor = vision.histograms.bovwhistograms.VsemHistogramExtractor(...
@@ -82,11 +93,6 @@ histogramExtractor = vision.histograms.bovwhistograms.VsemHistogramExtractor(...
 
 conceptExtractor = concepts.extractor.VsemConceptsExtractor('subbin_norm_type', 'l2', 'norm_type', 'l2', 'kermap', 'hellinger', 'post_norm_type', 'l2');
 
-if strcmpi(configuration.demoType, 'tiny')
-    % image discount
-    concepts = conceptExtractor.extractConcepts(dataset, histogramExtractor,...
-        'imageLimit', configuration.conceptImageLimit);
-else
-    % no image discount
-    concepts = conceptExtractor.extractConcepts(dataset, histogramExtractor);
-end
+concepts = conceptExtractor.extractConcepts(histogramExtractor,...
+    imagePaths, annotations, conceptList);
+

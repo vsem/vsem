@@ -44,6 +44,18 @@ end
 dataset = datasets.VsemDataset(configuration.imagesPath, 'annotationFolder',...
     configuration.annotationPath);
 
+if strcmpi(configuration.demoType, 'tiny')
+    annotatedImages = dataset.getAnnotatedImages('imageLimit', ...
+        configuration.conceptImageLimit);
+else
+    annotatedImages = dataset.getAnnotatedImages();
+end
+
+imagePaths = annotatedImages.imageData(:,1);
+annotations = annotatedImages.imageData(:,2);
+conceptList = annotatedImages.conceptList;
+clear annotatedImages;
+
 % featureExtractor object creation
 featureExtractor = vision.features.PhowFeatureExtractor();
 
@@ -59,7 +71,7 @@ else
         configuration.vocabularySize);
 end
 
-vocabulary = KmeansVocabulary.trainVocabulary(dataset.getImagesPaths(),...
+vocabulary = KmeansVocabulary.trainVocabulary(imagePaths,...
     featureExtractor);
 
 % histogram and concept extractor objects creation and concept extraction
@@ -69,14 +81,8 @@ histogramExtractor = vision.histograms.bovwhistograms.VsemHistogramExtractor(...
 
 conceptExtractor = concepts.extractor.VsemConceptsExtractor();
 
-if strcmpi(configuration.demoType, 'tiny')
-    % image discount
-    conceptSpace = conceptExtractor.extractConcepts(dataset, histogramExtractor,...
-        'imageLimit', configuration.conceptImageLimit);
-else
-    
-    conceptSpace = conceptExtractor.extractConcepts(dataset, histogramExtractor);
-end
+conceptSpace = conceptExtractor.extractConcepts(histogramExtractor, ...
+    imagePaths, annotations, conceptList);
 
 % reweighting concept matrix
 %conceptSpace = conceptSpace.reweight('reweightingFunction', @concepts.space.transformations.reweighting.pmiReweight);
