@@ -69,7 +69,8 @@ else
         configuration.vocabularySize);
 end
 
-vocabulary = GMMVocabulary.trainVocabulary(dataset, featureExtractor);
+vocabulary = GMMVocabulary.trainVocabulary(dataset.getImagesPaths(), ...
+    featureExtractor);
 
 % histogram and concept extractor objects creation and concept extraction
 histogramExtractor = vision.histograms.bovwhistograms.VsemHistogramExtractor(...

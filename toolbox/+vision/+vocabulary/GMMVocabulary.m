@@ -38,16 +38,12 @@ classdef GMMVocabulary < handle & vision.vocabulary.GenericVocabulary
             obj.gmmConfiguration.maxcomps = ceil(obj.gmmConfiguration.voc_size/4);
         end
         
-        function vocabulary = trainVocabulary(obj, dataset, featureExtractor, varargin)
+        function vocabulary = trainVocabulary(obj, imagesPaths, featureExtractor)
 
             % -------------------------------------------------------------------------
             % 1. Extract features for training into 'feats' matrix
             %     applying any limits on number of features/images
             % -------------------------------------------------------------------------
-            
-            % varargin contains image or concept lists, to be input to the getImagesPaths method from the
-            % dataset class, to allow the vocabulary be prepared on a subset of images
-            imagesPaths = dataset.getImagesPaths(varargin{:});
             
             % if trainimage_count was not left at it's default value
             % (indicating all detected images should be used for training)
