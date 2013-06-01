@@ -59,7 +59,8 @@ else
         configuration.vocabularySize);
 end
 
-vocabulary = KmeansVocabulary.trainVocabulary(dataset, featureExtractor);
+vocabulary = KmeansVocabulary.trainVocabulary(dataset.getImagesPaths(),...
+    featureExtractor);
 
 % histogram and concept extractor objects creation and concept extraction
 histogramExtractor = vision.histograms.bovwhistograms.VsemHistogramExtractor(...
