@@ -58,7 +58,7 @@ classdef FKEncoder < handle & vision.histograms.bovwhistograms.encoding.GenericE
                 dim = dim + obj.codebook_.n_gauss*obj.codebook_.n_dim;
             end
         end
-        code = encode(obj, feats)
+        code = encode(obj, feats);
     end
     
 end
