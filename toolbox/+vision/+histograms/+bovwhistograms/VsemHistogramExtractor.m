@@ -141,19 +141,13 @@ classdef VsemHistogramExtractor
             obj.pooler = vision.histograms.bovwhistograms.pooling.SPMPooler(poolerInput{:}, obj.encoder);
         end
         
-        function [histogram, objectList] = extractConceptHistogram(obj, image)
+        function [histogram, objectList] = extractConceptHistogram(obj, ...
+                imagePath, annotation)
         % extractConceptHistogram histogram extraction method
         %   gState(obj, image) extracts a histogram for the image
         %   'image', according to the options set in the
         %   VsemHistogramExtractor object.
                
-
-            % extracting annotation when present
-            annotation = image{2};
-
-            % extracting image path
-            imagePath = image{1};
-            
             switch lower(obj.options.localization)
                 case 'global'
                     
