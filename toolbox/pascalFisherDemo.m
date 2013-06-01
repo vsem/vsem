@@ -53,8 +53,10 @@ featureExtractor = vision.features.PhowFeatureExtractor();
 
 % visual feature descriptor dimensionality reduction
 if configuration.descriptorDimension ~= 128
-    dimensionalityReduction = vision.features.helpers.dimensionality.PCADimensionalityReduction(featureExtractor, configuration.descriptorDimension);
-    featureExtractor.phowConfiguration.low_proj = dimensionalityReduction.train(dataset);
+    pca = vision.features.helpers.dimensionality.PCADimensionalityReduction(...
+        featureExtractor, configuration.descriptorDimension);
+    featureExtractor.phowConfiguration.low_proj = ...
+        pca.train(dataset.getImagesPaths());
 end
 
 % visual vocabulary generator object and visual vocabulary creation
