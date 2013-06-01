@@ -23,18 +23,13 @@ classdef PCADimensionalityReduction < handle & vision.features.helpers.dimension
             obj.pcaConfiguration = vl_argparse(obj.pcaConfiguration, varargin);
         end
         
-        function low_proj = train(obj, dataset, varargin)
+        function low_proj = train(obj, imagesPaths, varargin)
             %Train
             %
             % -------------------------------------------------------------------------
             % 1. Extract features for training into 'feats' matrix
             %     applying any limits on number of features/images
             % -------------------------------------------------------------------------
-            
-            % varargin contains image or concept lists, or train image limit to be input
-            % to the getImagesPaths method from the dataset class, to allow the vocabulary
-            % be prepared on a subset of images
-            imagesPaths = dataset.getImagesPaths(varargin{:});
             
             if obj.pcaConfiguration.descount_limit > 0
                 % set truncation value for image features just a little bit
