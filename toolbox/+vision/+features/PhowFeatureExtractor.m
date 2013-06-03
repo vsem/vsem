@@ -26,7 +26,7 @@ classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
 
             % the output dimension is set to 128 in the superclass
             obj.phowConfiguration.out_dim = obj.out_dim;
-        end
+       end
 
         function [feats, frames] = compute(obj, imagePath)
             % read and standardize image 
@@ -42,7 +42,7 @@ classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
 
             if obj.phowConfiguration.rootSift
                 % calculate root sift
-                feats = sqrt(feats/sum(feats));
+                feats = vision.features.helpers.rootDescriptors(feats);
             end
 
             if obj.phowConfiguration.remove_zero
