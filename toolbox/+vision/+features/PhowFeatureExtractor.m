@@ -28,10 +28,12 @@ classdef PhowFeatureExtractor < handle & vision.features.GenericFeatureExtractor
             obj.phowConfiguration.out_dim = obj.out_dim;
        end
 
-        function [feats, frames] = compute(obj, imagePath)
+        function [feats, frames, imsize] = compute(obj, imagePath)
             % read and standardize image 
             image = obj.readImage(imagePath);
             image = obj.standardizeImage(image);
+
+            imsize = size(image);
 
             [frames, feats] = vl_phow(image, 'Verbose', obj.phowConfiguration.verbose, ...
                 'Sizes', obj.phowConfiguration.sizes, 'Fast', obj.phowConfiguration.fast, 'step', obj.phowConfiguration.step, ...
