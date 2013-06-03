@@ -274,40 +274,47 @@ function [imageData, conceptList] = prepareImages(obj)
 
         case 'descfiles'
             % read all images in the image folder
-            imageData  = struct('filePath', ...
-                listFiles(obj.sourceData{1}{2}, obj.filemask));
+            imageList  = listFiles(obj.sourceData{1}{2}, obj.filemask);
 
             % settings for progress bar graphics and variables
             text = 'Preparing dataset: ';
             barColor = [0.26 0 0.51];
-            waitBar = helpers.graphics.WaitBar(length(imageData), text, barColor);
+            waitBar = helpers.graphics.WaitBar(length(imageList), text, barColor);
 
             % initializing concept list
             conceptList = {};
 
+            % initialize
+            imageData = struct('filePath', {}, 'annotation', {});
+
             % iterating over the set of images
-            for i = 1:length(imageData)
+            for i = 1:length(imageList)
 
                 % updating waitbar
                 waitBar.update(i);
 
                 % building path for annotation and determining whether such file exists
-                [~ , filename, ~]  = fileparts(imageData(i).filePath);
+                [~ , filename, ~]  = fileparts(imageList{i});
                 annotationPath = fullfile(obj.sourceData{2}{2}, ...
                     [filename '.desc']);
-                assert(any(exist(annotationPath, 'file')), ...
-                    'No annotation file %s was located', annotationPath);
+                
+                if exist(annotationPath, 'file')
+                    % extracting and assigning objects to the image they belong to
+                    annotationFile = fopen(annotationPath);
+                    scan = textscan(annotationFile, '%s', 'Delimiter', '\n');
+                    objectNames = scan{1};
+                    fclose(annotationFile);
 
-                % extracting and assigning objects to the image they belong to
-                annotationFile = fopen(annotationPath);
-                scan = textscan(annotationFile, '%s', 'Delimiter', '\n');
-                objectNames = scan{1};
-                fclose(annotationFile);
-                imageData(i).annotation = objectNames';
+                    imageData = [imageData; struct('filePath', imageList(i),...
+                        'annotation', {objectNames'})];
 
-                % updating conceptList with the set of new concepts
-                newConcepts = ismember(objectNames, conceptList) == 0;
-                conceptList = cat(1, conceptList, objectNames(newConcepts));
+                    % updating conceptList with the set of new concepts
+                    newConcepts = ismember(objectNames, conceptList) == 0;
+                    conceptList = cat(1, conceptList, objectNames(newConcepts));
+                else
+                    fprintf(1, 'Description file does not exist: %s\n', ...
+                        annotationPath);
+                end
 
                 % handle for cancel button on progress bar
                 if ~waitBar.textualVersion && getappdata(waitBar.bar,'canceling')
