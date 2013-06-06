@@ -187,7 +187,7 @@ fisher<T>::compute( std::vector<T*> &x, std::vector<T> &wghx, T *fk )
     }
   } 
   
-  //alpha_and_lp_normalization(fk);
+  alpha_and_lp_normalization(fk);
   
   return 0;
 }
