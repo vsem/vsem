@@ -88,10 +88,7 @@ conceptSpace = conceptExtractor.extractConcepts(histogramExtractor, ...
 %conceptSpace = conceptSpace.reweight('reweightingFunction', @concepts.space.transformations.reweighting.pmiReweight);
 
 % computing similarity score with similarity extractor
-similarityExtractor = benchmarks.helpers.SimilarityExtractor();
-similarityBenchmark = benchmarks.SimilarityBenchmark('benchmarkName','pascal');
-
-[score, pValue] = similarityBenchmark.computeBenchmark(conceptSpace, similarityExtractor);
+[score, pValue] = benchmarks.runBenchmark(conceptSpace, 'pascal');
 
 % printing results
 fprintf('The obtained visual concepts performed with a score of %4.2f%% and a significance (p value) of %4.3f on the Pascal similarity benchmark.\n',score*100, pValue);
