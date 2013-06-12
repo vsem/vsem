@@ -4,10 +4,12 @@ classdef ColorFeatureExtractor < handle & vision.features.GenericFeatureExtracto
         function cfext = ColorFeatureExtractor()
         end % constructor
         
-        function [feats, frames] = compute(cfext, imagePath)
+        function [feats, frames, imsize] = compute(cfext, imagePath)
             % Read and convert image to double precision
             image = im2double(cfext.readImage(imagePath));
             % image = im2double(image);
+
+            imsize = size(image);
 
             % Check if the image is a truecolor M-by-N-by-3 array
             if size(image, 3) == 1
