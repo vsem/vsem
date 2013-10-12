@@ -1,6 +1,21 @@
 function pcode = compute(obj, imsize, feats, frames)
 %COMPUTE Pool features using the spatial pyramid match kernel
 
+if obj.turnMeOff
+    % within here the pooler is turned off
+    height = imsize(1) ;
+    width = imsize(2) ;
+    [drop, binsa] = min(vl_alldist(obj.encoder_.codebook_, single(feats)), [], 1) ;
+    binsx = vl_binsearch(linspace(1,width,2), frames(1,:)) ;
+    binsy = vl_binsearch(linspace(1,height,2), frames(2,:)) ;
+    
+    % combined quantization
+    bins = sub2ind([1, 1, 10], ...
+        binsy,binsx,binsa) ;
+    pcode = zeros(10, 1) ;
+    pcode = vl_binsum(pcode, ones(size(bins)), bins) ;
+    
+else
     % check pool type is valid
     if ~(strcmp(obj.pool_type,'sum') || strcmp(obj.pool_type,'max'))
         error('pool_type must be either ''sum'' or ''max''');
@@ -145,6 +160,7 @@ function pcode = compute(obj, imsize, feats, frames)
         
     end
     
+end
     % vectorise
     pcode = pcode(:);
     
@@ -175,5 +191,6 @@ function pcode = compute(obj, imsize, feats, frames)
             pcode = pcode/norm(pcode,1);
         end
     end
+
 end
 
