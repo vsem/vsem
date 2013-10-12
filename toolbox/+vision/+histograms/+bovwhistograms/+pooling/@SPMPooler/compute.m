@@ -3,9 +3,9 @@ function pcode = compute(obj, imsize, feats, frames)
 
 if ~obj.spatialBinning
     % within here the pooler is turned off
-    height = imsize(1) ;
-    width = imsize(2) ;
-    numWords = obj.encoder_.get_output_dim()
+    height = imsize(1);
+    width = imsize(2);
+    numWords = obj.encoder_.get_output_dim();
     [drop, binsa] = min(vl_alldist(obj.encoder_.codebook_, single(feats)), [], 1) ;
     binsx = vl_binsearch(linspace(1,width,2), frames(1,:)) ;
     binsy = vl_binsearch(linspace(1,height,2), frames(2,:)) ;
