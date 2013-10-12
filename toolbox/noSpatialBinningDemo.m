@@ -20,7 +20,7 @@ configuration.vocabularySize = 100;
 configuration.localization = 'object';
 
 % turning off the spatial binning
-configuration.turnMeOff = true;
+configuration.spatialBinning = false;
 
 % tiny settings
 if strcmpi(configuration.demoType, 'tiny')
@@ -76,7 +76,7 @@ vocabulary = KmeansVocabulary.trainVocabulary(imagePaths,...
 % histogram and concept extractor objects creation and concept extraction
 histogramExtractor = vision.histograms.bovwhistograms.VsemHistogramExtractor(...
     featureExtractor, vocabulary, 'localization', configuration.localization,...
-    'turnMeOff', configuration.turnMeOff);
+    'spatialBinning', configuration.spatialBinning);
 
 conceptExtractor = concepts.extractor.VsemConceptsExtractor();
 

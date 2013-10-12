@@ -1,7 +1,7 @@
 function pcode = compute(obj, imsize, feats, frames)
 %COMPUTE Pool features using the spatial pyramid match kernel
 
-if obj.turnMeOff
+if ~obj.spatialBinning
     % within here the pooler is turned off
     height = imsize(1) ;
     width = imsize(2) ;

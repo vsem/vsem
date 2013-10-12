@@ -2,7 +2,7 @@ classdef SPMPooler < handle & vision.histograms.bovwhistograms.pooling.GenericPo
     %SPMPooler Pooling using the spatial pyramid match kernel
     
     properties
-        turnMeOff
+        spatialBinning
         subbin_norm_type    % 'l1' or 'l2' (or other value = none)
         norm_type    % 'l1' or 'l2' (or other value = none)
         post_norm_type    % 'l1' or 'l2' (or other value = none)
@@ -17,9 +17,9 @@ classdef SPMPooler < handle & vision.histograms.bovwhistograms.pooling.GenericPo
     end
     
     methods
-        function obj = SPMPooler(turnMeOff, subbin_norm_type, norm_type, post_norm_type, pool_type, quad_divs, horiz_divs, kermap, encoder)
+        function obj = SPMPooler(spatialBinning, subbin_norm_type, norm_type, post_norm_type, pool_type, quad_divs, horiz_divs, kermap, encoder)
             % set default parameter values
-            obj.turnMeOff = turnMeOff;
+            obj.spatialBinning = spatialBinning;
             obj.subbin_norm_type = lower(subbin_norm_type);
             obj.norm_type = lower(norm_type);
             obj.post_norm_type = lower(post_norm_type);
@@ -33,7 +33,7 @@ classdef SPMPooler < handle & vision.histograms.bovwhistograms.pooling.GenericPo
         end
         function dim = get_output_dim(obj)
             
-            if obj.turnMeOff
+            if obj.spatialBinning
                 dim = obj.encoder_.get_output_dim();
                 % account for expansion in dimensionality when using kernel map
                 if strcmp(obj.kermap,'homker')
