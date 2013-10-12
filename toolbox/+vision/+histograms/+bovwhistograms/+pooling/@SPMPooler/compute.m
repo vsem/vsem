@@ -5,14 +5,15 @@ if obj.turnMeOff
     % within here the pooler is turned off
     height = imsize(1) ;
     width = imsize(2) ;
+    numWords = obj.encoder_.get_output_dim();
     [drop, binsa] = min(vl_alldist(obj.encoder_.codebook_, single(feats)), [], 1) ;
     binsx = vl_binsearch(linspace(1,width,2), frames(1,:)) ;
     binsy = vl_binsearch(linspace(1,height,2), frames(2,:)) ;
     
     % combined quantization
-    bins = sub2ind([1, 1, 10], ...
+    bins = sub2ind([1, 1, numWords], ...
         binsy,binsx,binsa) ;
-    pcode = zeros(10, 1) ;
+    pcode = zeros(numWords, 1) ;
     pcode = vl_binsum(pcode, ones(size(bins)), bins) ;
     
 else
