@@ -33,7 +33,7 @@ classdef SPMPooler < handle & vision.histograms.bovwhistograms.pooling.GenericPo
         end
         function dim = get_output_dim(obj)
             
-            if obj.spatialBinning
+            if ~obj.spatialBinning
                 dim = obj.encoder_.get_output_dim();
                 % account for expansion in dimensionality when using kernel map
                 if strcmp(obj.kermap,'homker')
