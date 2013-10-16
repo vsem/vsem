@@ -4,13 +4,20 @@ classdef ColorFeatureExtractor < handle & vision.features.GenericFeatureExtracto
         function cfext = ColorFeatureExtractor()
         end % constructor
         
+<<<<<<< HEAD
+        function [feats, frames] = compute(cfext, imagePath)
+=======
         function [feats, frames, imsize] = compute(cfext, imagePath)
+>>>>>>> devel
             % Read and convert image to double precision
             image = im2double(cfext.readImage(imagePath));
             % image = im2double(image);
 
+<<<<<<< HEAD
+=======
             imsize = size(image);
 
+>>>>>>> devel
             % Check if the image is a truecolor M-by-N-by-3 array
             if size(image, 3) == 1
                 err = MException('VSEM:FeatExt', 'Grayscale image: %s', ...
