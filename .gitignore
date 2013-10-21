@@ -1,5 +1,6 @@
 # LIBRARIES
 lib/vlfeat-0.9.16
+lib/vlfeat-0.9.17
 
 # Mac OS MATLAB swap files
 *.m~

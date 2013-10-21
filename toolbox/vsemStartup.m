@@ -20,11 +20,9 @@ root = a;
 % Add VSEM to the matlab path
 addpath(fullfile(root,'toolbox'));
 
-% Add fisher scource code to the matlab path
-addpath(fullfile(root,'lib/gmm-fisher/matlab'));
 
 % Add VLFeat to the matlab path
-run(fullfile(root,'lib/vlfeat-0.9.16/toolbox/vl_setup'));
+run(fullfile(root,'lib/vlfeat-0.9.17/toolbox/vl_setup'));
 
 if nargout == 0
   clear path ;
