@@ -47,7 +47,7 @@ if strcmpi(opts.demoType, 'tiny')
         'extractorFn', @(x) getDenseSIFT(x, ...
                                          'step', 4, ...
                                          'scales', 2.^(1:-.5:-3))};
-    opts.vocabularySize = 10;
+                                     
     % number of images to be used in the creation of visual vocabulary;
     % if limit < 1, no discount is applied
     opts.vocabularyImageLimit = 50;

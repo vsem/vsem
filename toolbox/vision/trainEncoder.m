@@ -69,8 +69,6 @@ opts.extractorFn = @getDenseSIFT;
 opts.lite = false;
 opts = vl_argparse(opts, varargin);
 
-fprintf('IM HERE');
-
 for i = 1:numel(opts.layouts)
   t = sscanf(opts.layouts{i},'%dx%d');
   m = t(1);
