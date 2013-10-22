@@ -22,6 +22,12 @@ function descrs = encodeImage(encoder, im, varargin)
 
 opts.cacheDir = [] ;
 opts.cacheChunkSize = 512 ;
+opts.localization = 'global';
+
+% TODO: Change in a more elegant solution
+opts.object = [];
+opts.surrounding = [];
+
 opts = vl_argparse(opts,varargin) ;
 
 if ~iscell(im), im = {im} ; end
@@ -42,7 +48,18 @@ for c = 1:numChunks
         fprintf('%s: processing a chunk of %d images (%3d of %3d, %5.1fs to go)\n', ...
             mfilename, numel(range), ...
             c, numChunks, toc(startTime) / (c - 1) * (numChunks - c + 1)) ;
-        data = processChunk(encoder, im(range)) ;
+            
+        % TODO: Change in a more elegant solution
+            data = processChunk(encoder, im(range), varargin{:}) ;
+%         if isempty(opts.object) && isempty(opts.surrounding)
+%             data = processChunk(encoder, im(range)) ;
+%         elseif ~isempty(opts.object)
+%             data = processChunk(encoder, im(range), opts.object) ;
+%         elseif ~isempty(opts.surrounding)
+%             data = processChunk(encoder, im(range), opts.surrounding) ;
+%             fprintf('IM IN OBJECT')
+%         end
+        
         if ~isempty(opts.cacheDir)
             save(chunkPath, 'data') ;
         end
@@ -55,15 +72,16 @@ descrs = cat(2,descrs{:}) ;
 % --------------------------------------------------------------------
 function psi = processChunk(encoder, im, varargin)
 % --------------------------------------------------------------------
+
 psi = cell(1,numel(im)) ;
 if numel(im) > 1 & matlabpool('size') > 1
     parfor i = 1:numel(im)
-        psi{i} = encodeOne(encoder, im{i}, varargin) ;
+        psi{i} = encodeOne(encoder, im{i}, varargin{:}) ;
     end
 else
     % avoiding parfor makes debugging easier
     for i = 1:numel(im)
-        psi{i} = encodeOne(encoder, im{i}, varargin) ;
+        psi{i} = encodeOne(encoder, im{i}, varargin{:}) ;
     end
 end
 psi = cat(2, psi{:}) ;
@@ -76,18 +94,16 @@ function psi = encodeOne(encoder, im, varargin)
 im = encoder.readImageFn(im) ;
 
 %%% EXPERIMENTAL CODE START%%%
-
-if nargin == 3
+if nargin == 2  
     % extract feature descriptors
     %[features, frames, imageSize] = ...
     %    obj.featureExtractor.compute(imagePath);
     features = encoder.extractorFn(im);
     imageSize = size(im) ;
 elseif nargin == 4
-    
     % checking for errors in the input
     assert(any(strcmpi(varargin{1}, {'surrounding', 'object'})), 'Input must be either ''object'' or ''surrounding'' and the localization matrix.');
-    
+
     % assigning localization
     xmin = varargin{2}(1); xmax = varargin{2}(2); ymin = varargin{2}(3); ymax = varargin{2}(4);
     
@@ -222,15 +238,14 @@ idxs = bsxfun(@or,...
 % idxs = logical(idxs);
 
 % updating features and frames
-w = size(im,2) ;
-h = size(im,1) ;
+%w = size(im,2) ;
+%h = size(im,1) ;
+
 frames = features.frame(1:2,:) ;
 descrs = features.descr(1:2,:) ;
-descrs = descrs(:,idxs);
-frames = frames(:,idxs);
 
-features.frame = cat(2, frames{:}) ;
-features.descr = cat(2, descrs{:}) ;
+features.frame = descrs(:,idxs);
+features.desc = frames(:,idxs);
 
 %end % getsurroundingFeatures
 
@@ -255,19 +270,17 @@ idxs = bsxfun(@and,...
 % end
 % idxs = logical(idxs);
 
-% updating features and frames
-w = size(im,2) ;
-h = size(im,1) ;
 frames = features.frame(1:2,:) ;
 descrs = features.descr(1:2,:) ;
-descrs = descrs(:,idxs);
-frames = frames(:,idxs);
-
-% providing new coordinates, needed for spacial binning
 frames(1,:) = frames(1,:) - xmin;
 frames(2,:) = frames(2,:) - ymin;
 
-features.frame = cat(2, frames{:}) ;
-features.descr = cat(2, descrs{:}) ;
+features.frame = descrs(:,idxs);
+features.desc = frames(:,idxs);
+
+% TODO: Ask Ulisse if this is necessary
+% providing new coordinates, needed for spacial binning
+%frames(1,:) = frames(1,:) - xmin;
+%frames(2,:) = frames(2,:) - ymin;
 
 %%% EXPERIMENTAL CODE END%%%

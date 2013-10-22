@@ -1,4 +1,4 @@
-function conceptSpace = extractConcepts(encoder, imagePaths, annotations, conceptList)
+function conceptSpace = extractConcepts(encoder, imagePaths, annotations, conceptList, varargin)
 % extractConcepts concept extractor main utility
 %   extractConcepts(imagePaths, annotations, conceptList, 'optionName',
 %   'optionValue') builds a concept space from the 'dataset'
@@ -12,18 +12,16 @@ function conceptSpace = extractConcepts(encoder, imagePaths, annotations, concep
 %   which is the only recipient of any additional option. See help
 %   for getAnnotatedImages method to review available options.
 
+opts.localization = 'global';
 
 opts.verbose = false;
-
-conceptMatrixInitialized = false;
+opts = vl_argparse(opts, varargin);
+opts.conceptHistParams = {'localization', opts.localization};
+conceptSpace=1;
 
 % Check if we have the same number of images and corresponding tags
 assert(length(imagePaths) == length(annotations), ...
     'Number of images does not match the number of annotations');
-
-
-% initializing concept space
-%conceptSpace = concepts.space.ConceptSpace(conceptList, conceptMatrix);
 
 if opts.verbose
     % settings for progress bar graphics and variables
@@ -32,6 +30,7 @@ if opts.verbose
     waitBar = helpers.graphics.WaitBar(length(imagePaths), text, barColor);
 end
 
+conceptMatrixInitialized = false;
 % extracting concepts over the whole selected set of images
 for i = 1:size(imagePaths, 1)
     
@@ -47,7 +46,8 @@ for i = 1:size(imagePaths, 1)
     
     try
         % extracting histogram and object list for the ith image
-        [histogram, objectList] = extractConceptHistogram(encoder, imagePaths{i}, annotations{i});
+        
+        [histogram, objectList] = extractConceptHistogram(encoder, imagePaths{i}, annotations{i}, opts.conceptHistParams{:});
         
         if ~conceptMatrixInitialized
             % initializing concept matrix with histogram dimension

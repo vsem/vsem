@@ -13,7 +13,7 @@ function conceptSpace = updateConceptMatrix(conceptSpace, histogram, objectList)
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
-%opts.aggregatorFunction = @sum;
+%opts.aggregatorFunction = @sumFun;
 
 
 % extracting and cleaning index list for the selected list of objects

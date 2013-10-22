@@ -1,4 +1,4 @@
-function updatedMatrix = sum(conceptMatrix,histogram,idxs)
+function updatedMatrix = sumFunc(conceptMatrix,histogram,idxs)
 % sum Sum aggregation
 %	sum(M1, M2, idxs) aggregates the matrix 'M1' to the matrix 'M2' for the
 %   'idxs' indexes and returns the updated matrix.
