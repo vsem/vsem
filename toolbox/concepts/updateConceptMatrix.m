@@ -1,4 +1,4 @@
-function conceptSpace = updateConceptMatrix(conceptSpace, histogram, objectList, varargin)
+function space = updateConceptMatrix(space, histogram, objectList, varargin)
 % update concept space aggregator
 %   update(obj, histogram, objectList) aggregates one or more histograms
 %   'histogram' to a list of objects 'objectList' of the same size, or
@@ -13,15 +13,15 @@ function conceptSpace = updateConceptMatrix(conceptSpace, histogram, objectList,
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
-opts.aggregationFn = @sumFunc;
+opts.aggregationFn = @sumFn;
 opts = vl_argparse(opts,varargin) ;
 
 % extracting and cleaning index list for the selected list of objects
-idxs = conceptSpace.conceptIndex.values(objectList);
+idxs = space.conceptIndex.values(objectList);
 idxs = cat(2, idxs{:});
 
 % aggregating the new histogram matrix with the histograms already computed
-updatedMatrix = opts.aggregationFn(conceptSpace.conceptMatrix, histogram, idxs);
+updatedMatrix = opts.aggregationFn(space.conceptMatrix, histogram, idxs);
 
 % assigning back updated matrix
-conceptSpace.conceptMatrix(:,idxs) = updatedMatrix;
+space.conceptMatrix(:,idxs) = updatedMatrix;
