@@ -1,4 +1,4 @@
-function matrix = normalize(matrix, normSize, normType)
+function matrix = lNormalize(matrix, normSize, normType)
 % normalize normalization utility for a matrix
 %   normalize(obj, normSize, normType) normalizes the entire matrix
 %   given a certain "size" 'normSize', that is bins- or whole image-wise
