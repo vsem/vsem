@@ -25,7 +25,7 @@ opts.encoderParams = {...
                                    'step', 4, ...
                                    'scales', 2.^(1:-.5:-3))};
                                
-opts.conceptExtractParams = {'localization', 'global',...
+opts.conceptExtractParams = {'localization', 'surrounding',...
                              'verbose', false};       
 
 for pass = 1:2
@@ -57,10 +57,10 @@ if strcmpi(opts.demoType, 'tiny')
                                      
     % number of images to be used in the creation of visual vocabulary;
     % if limit < 1, no discount is applied
-    opts.vocabularyImageLimit = 50;
+    opts.vocabularyImageLimit = 10;
     % number of images to calculate the concept representation from; if
     % limit < 1, no discount is applied
-    opts.conceptImageLimit = 50;
+    opts.conceptImageLimit = 10;
 end
 
 % dataset object creation

@@ -137,6 +137,7 @@ end
 
 psi = {} ;
 for i = 1:size(encoder.subdivisions,2)
+    
     minx = encoder.subdivisions(1,i) * imageSize(2) ;
     miny = encoder.subdivisions(2,i) * imageSize(1) ;
     maxx = encoder.subdivisions(3,i) * imageSize(2) ;
@@ -145,6 +146,7 @@ for i = 1:size(encoder.subdivisions,2)
     ok = ...
         minx <= features.frame(1,:) & features.frame(1,:) < maxx  & ...
         miny <= features.frame(2,:) & features.frame(2,:) < maxy ;
+    
     
     descrs = encoder.projection * bsxfun(@minus, ...
         features.descr(:,ok), ...
@@ -162,12 +164,13 @@ for i = 1:size(encoder.subdivisions,2)
     
     switch encoder.type
         case 'bovw'
+            fprintf('IM HERE');
             [words,distances] = vl_kdtreequery(encoder.kdtree, encoder.words, ...
                 descrs, ...
                 'MaxComparisons', 100) ;
+            fprintf('IM HERE');
             z = vl_binsum(zeros(encoder.numWords,1), 1, double(words)) ;
             z = sqrt(z) ;
-            
         case 'fv'
             z = vl_fisher(descrs, ...
                 encoder.means, ...
@@ -240,11 +243,13 @@ idxs = bsxfun(@or,...
 %w = size(im,2) ;
 %h = size(im,1) ;
 
-frames = features.frame(1:2,:) ;
-descrs = features.descr(1:2,:) ;
 
-features.frame = descrs(:,idxs);
-features.desc = frames(:,idxs);
+
+features.descr = features.descr(:,idxs);
+features.frame = features.frame(1:2,idxs);
+features.contrast = features.contrast(:,idxs);
+
+
 
 %end % getsurroundingFeatures
 
@@ -269,17 +274,8 @@ idxs = bsxfun(@and,...
 % end
 % idxs = logical(idxs);
 
-frames = features.frame(1:2,:) ;
-descrs = features.descr(1:2,:) ;
-frames(1,:) = frames(1,:) - xmin;
-frames(2,:) = frames(2,:) - ymin;
-
-features.frame = descrs(:,idxs);
-features.desc = frames(:,idxs);
-
-% TODO: Ask Ulisse if this is necessary
-% providing new coordinates, needed for spacial binning
-%frames(1,:) = frames(1,:) - xmin;
-%frames(2,:) = frames(2,:) - ymin;
+features.descr = features.descr(:,idxs);
+features.frame = features.frame(1:2,idxs);
+features.contrast = features.contrast(:,idxs);
 
 %%% EXPERIMENTAL CODE END%%%

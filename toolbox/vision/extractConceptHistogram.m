@@ -26,8 +26,8 @@ switch lower(opts.localization)
         % computing histogram
         histogram = encodeImage(encoder, imagePath);
         
-        
     case 'surrounding'        
+        
         % checking for input errors
         assert(size(annotation, 1) == 2,'Localization data unavailable, check annotation or select ''global'' localization.')
         
@@ -45,6 +45,7 @@ switch lower(opts.localization)
             
             % computing histogram for the kth object
             histogram{k} = encodeImage(encoder, imagePath, 'surrounding', boundingBox);
+            
         end
         
         % standardizing histogram
