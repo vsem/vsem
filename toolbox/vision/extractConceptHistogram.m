@@ -1,5 +1,12 @@
 function [histogram, objectList] = extractConceptHistogram(encoder, imagePath, annotation, varargin)
+%
 
+% Author: Ulisse Bordignon
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
 
 
 opts.localization = [];

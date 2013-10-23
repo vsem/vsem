@@ -9,9 +9,9 @@ function matrix = applyKernelMap(matrix, kernelMap)
 %   'kernelMap':
 %     Map type, either 'homker' or 'hellinger'.
 %
-%
-% Authors: A2
-%
+
+% Author: Ulisse Bordignon
+
 % AUTORIGHTS
 %
 % This file is part of the VSEM library and is made available under

@@ -4,6 +4,14 @@ function conceptMatrix = getConceptMatrix(space, varargin)
 %   default, the complete visual concept matrix for concept space.
 %   Alternatively, it returns the matrix for the concept or cell
 %   array of concepts it was requested for.
+%
+
+% Author: Ulisse Bordignon
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
 
 
 if nargin == 1

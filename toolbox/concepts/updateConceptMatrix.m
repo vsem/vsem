@@ -5,9 +5,9 @@ function space = updateConceptMatrix(space, histogram, objectList, varargin)
 %   aggregates one histogram to a list of objects, regardless the size of
 %   the latter. It returns the updated object.
 %
-%
-% Authors: A2
-%
+
+% Author: Ulisse Bordignon
+
 % AUTORIGHTS
 %
 % This file is part of the VSEM library and is made available under

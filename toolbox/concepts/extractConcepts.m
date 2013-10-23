@@ -11,6 +11,14 @@ function conceptSpace = extractConcepts(encoder, imagePaths, annotations, concep
 %   extractConcepts uses the dataset getAnnotatedImages method,
 %   which is the only recipient of any additional option. See help
 %   for getAnnotatedImages method to review available options.
+%
+
+% Author: Ulisse Bordignon
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
 
 opts.localization = 'global';
 
@@ -68,23 +76,3 @@ for i = 1:size(imagePaths, 1)
         end
     end % try-catch block
 end % image iteration
-
-%             % checking for sub bin normalization
-%             if ~strcmpi(obj.extractorConfiguration.subbin_norm_type, 'none')
-%                 conceptSpace = conceptSpace.normalize('bins', obj.extractorConfiguration.subbin_norm_type);
-%             end
-%
-%             % checking for complete normalization
-%             if ~strcmpi(obj.extractorConfiguration.norm_type, 'none')
-%                 conceptSpace = conceptSpace.normalize('whole', obj.extractorConfiguration.norm_type);
-%             end
-%
-%             % checking for kernel map application
-%             if ~strcmpi(obj.extractorConfiguration.kermap, 'none')
-%                 conceptSpace = conceptSpace.applyKernelMap(obj.extractorConfiguration.kermap);
-%             end
-%
-%             % checking for post-kernel map application normalization
-%             if ~strcmpi(obj.extractorConfiguration.post_norm_type, 'none')
-%                 conceptSpace = conceptSpace.normalize('whole', obj.extractorConfiguration.post_norm_type);
-%             end

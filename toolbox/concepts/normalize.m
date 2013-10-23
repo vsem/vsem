@@ -1,6 +1,6 @@
 function matrix = normalize(matrix, normSize, normType)
-% normalize normalization utility for the concept space
-%   normalize(obj, normSize, normType) normalizes the entire concept matrix
+% normalize normalization utility for a matrix
+%   normalize(obj, normSize, normType) normalizes the entire matrix
 %   given a certain "size" 'normSize', that is bins- or whole image-wise
 %   and a certain type 'normType'. The returning object can be assigned
 %   back to the original one or to a new one to preserve the original data.
@@ -13,9 +13,9 @@ function matrix = normalize(matrix, normSize, normType)
 %   'normType'
 %     Either 'bins' or 'whole'.
 %
-%
-% Authors: A2
-%
+
+% Author: Ulisse Bordignon
+
 % AUTORIGHTS
 %
 % This file is part of the VSEM library and is made available under

@@ -12,12 +12,11 @@ function descrs = encodeImage(encoder, im, varargin)
 %
 %   See also: TRAINENCODER().
 
-% Author: Andrea Vedaldi
+% Author: Andrea Vedaldi, modified by Elia Bruni
 
-% Copyright (C) 2013 Andrea Vedaldi
-% All rights reserved.
+% AUTORIGHTS
 %
-% This file is part of the VLFeat library and is made available under
+% This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
 opts.cacheDir = [] ;

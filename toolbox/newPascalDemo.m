@@ -1,5 +1,12 @@
 %function newPascalDemo(varargin)
 
+% Author: Elia Bruni
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
+
 % set the demo type to 'tiny' for less computationally expensive settings
 opts.demoType = 'tiny';
 opts.dataset = 'pascal';
