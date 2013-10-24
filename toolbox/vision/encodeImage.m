@@ -164,11 +164,9 @@ for i = 1:size(encoder.subdivisions,2)
     
     switch encoder.type
         case 'bovw'
-            fprintf('IM HERE');
             [words,distances] = vl_kdtreequery(encoder.kdtree, encoder.words, ...
                 descrs, ...
                 'MaxComparisons', 100) ;
-            fprintf('IM HERE');
             z = vl_binsum(zeros(encoder.numWords,1), 1, double(words)) ;
             z = sqrt(z) ;
         case 'fv'
