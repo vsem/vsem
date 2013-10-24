@@ -55,7 +55,10 @@ for i = 1:size(imagePaths, 1)
     try
         % extracting histogram and object list for the ith image
         
-        [histogram, objectList] = extractConceptHistogram(encoder, imagePaths{i}, annotations{i}, opts.conceptHistParams{:});
+        [histogram, objectList] = extractConceptHistogram(encoder, ...
+                                                          imagePaths{i}, ...
+                                                          annotations{i}, ...
+                                                          opts.conceptHistParams{:});
         
         if ~conceptMatrixInitialized
             % initializing concept matrix with histogram dimension
@@ -76,3 +79,27 @@ for i = 1:size(imagePaths, 1)
         end
     end % try-catch block
 end % image iteration
+
+
+% -------------------------------------------------------------------------
+function conceptSpace = updateConceptMatrix(conceptSpace, histogram, objectList, varargin)
+% -------------------------------------------------------------------------
+% update concept conceptSpace aggregator
+%   update(conceptSpace, histogram, objectList, varargin) aggregates one 
+%   or more histograms 'histogram' to a list of objects 'objectList' 
+%   of the same size, or aggregates one histogram to a list of 
+%   objects, regardless the size of the latter. It returns the updated 
+%   object.
+
+opts.aggregationFn = @sumFn;
+opts = vl_argparse(opts,varargin) ;
+
+% extracting and cleaning index list for the selected list of objects
+idxs = conceptSpace.conceptIndex.values(objectList);
+idxs = cat(2, idxs{:});
+
+% aggregating the new histogram matrix with the histograms already computed
+updatedMatrix = opts.aggregationFn(conceptSpace.conceptMatrix, histogram, idxs);
+
+% assigning back updated matrix
+conceptSpace.conceptMatrix(:,idxs) = updatedMatrix;
