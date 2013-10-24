@@ -1,7 +1,7 @@
-function idxs = isConcept(space, conceptList)
-% isConcept concept space handling utility
+function idxs = isConcept(conceptSpace, conceptList)
+% isConcept concept conceptSpace handling utility
 %   isConcept(obj, conceptList) determines which concepts in the
-%   cell array 'conceptList' are in the concept space. Returns a
+%   cell array 'conceptList' are in the concept conceptSpace. Returns a
 %   logical array.
 %
 
@@ -11,4 +11,4 @@ function idxs = isConcept(space, conceptList)
 %
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
-idxs = space.conceptIndex.isKey(conceptList);
+idxs = conceptSpace.conceptIndex.isKey(conceptList);

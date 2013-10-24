@@ -25,7 +25,7 @@ sf = repmat([' %f'], 1, length(conceptSpace.conceptMatrix)-1);
 formatString = strcat('%s %f', sf);
 formatString = strcat(formatString, '\n');
 
-for concept = conceptSpace.getConceptList
+for concept = getConceptList(conceptSpace)
     fprintf(fidSave, formatString, concept{:}, conceptSpace.getConceptMatrix(concept));
 end
 fclose(fidSave);

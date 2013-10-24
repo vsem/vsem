@@ -1,4 +1,4 @@
-function path = vsemRoot
+function path = vsem_root
 % vsemRoot  Obtain VSEM root path
 %   path = vsemRoot() returns the path to the VSEM installation.
 %

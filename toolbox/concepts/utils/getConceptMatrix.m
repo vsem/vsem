@@ -1,7 +1,7 @@
-function conceptMatrix = getConceptMatrix(space, varargin)
-% conceptMatrix concept matrix for the concept space
+function conceptMatrix = getConceptMatrix(conceptSpace, varargin)
+% conceptMatrix concept matrix for the concept conceptSpace
 %   getConceptMatrix(obj, 'optionName', 'optionValue') returns, by
-%   default, the complete visual concept matrix for concept space.
+%   default, the complete visual concept matrix for concept conceptSpace.
 %   Alternatively, it returns the matrix for the concept or cell
 %   array of concepts it was requested for.
 %
@@ -16,19 +16,19 @@ function conceptMatrix = getConceptMatrix(space, varargin)
 
 if nargin == 1
     % returning the complete matrix by default
-    conceptMatrix = space.conceptMatrix;
+    conceptMatrix = conceptSpace.conceptMatrix;
 elseif nargin == 2
     % checking for errors in the input list
-    assert(all(isConcept(varargin{:})), 'Some of the selected concepts are not in the concept space.');
+    assert(all(isConcept(varargin{:})), 'Some of the selected concepts are not in the concept conceptSpace.');
     
     % standardizing input for one single concept list
     if ischar(varargin{:}), varargin = {varargin}; end
     
     % extracting indexes and matrix for the selected concepts
-    idxs = space.conceptIndex.values(varargin{:});
+    idxs = conceptSpace.conceptIndex.values(varargin{:});
     idxs = cat(1,idxs{:});
     
-    conceptMatrix = space.conceptMatrix(:,idxs);
+    conceptMatrix = conceptSpace.conceptMatrix(:,idxs);
 else
     % checking for invalid input
     error('Invalid input argument. Select a single concept or a cell array of concepts. Default: complete matrix.')

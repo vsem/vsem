@@ -56,8 +56,5 @@ end
 fclose (fidMatrix);
 fprintf('\nFinished file processing.\n');
 
-conceptMatrix = conceptMatrix';
-conceptSpace = concepts.space.ConceptSpace(conceptList, conceptMatrix);
-
-
-end
+conceptSpace.conceptMatrix = conceptMatrix';
+conceptSpace.conceptIndex = containers.Map(conceptList, 1:length(conceptList));

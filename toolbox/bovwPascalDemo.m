@@ -1,11 +1,4 @@
-%function newPascalDemo(varargin)
-
-% Author: Elia Bruni
-
-% AUTORIGHTS
-%
-% This file is part of the VSEM library and is made available under
-% the terms of the BSD license (see the COPYING file).
+%function bovwPascalDemo(varargin)
 
 % set the demo type to 'tiny' for less computationally expensive settings
 opts.demoType = 'tiny';
@@ -25,7 +18,7 @@ opts.encoderParams = {...
                                    'step', 4, ...
                                    'scales', 2.^(1:-.5:-3))};
                                
-opts.conceptExtractParams = {'localization', 'surrounding',...
+opts.conceptExtractParams = {'localization', 'global',...
                              'verbose', false};       
 
 for pass = 1:2
@@ -54,13 +47,13 @@ if strcmpi(opts.demoType, 'tiny')
         'extractorFn', @(x) getDenseSIFT(x, ...
                                          'step', 4, ...
                                          'scales', 2.^(1:-.5:-3))};
-                                     
+    opts.vocabularySize = 10;
     % number of images to be used in the creation of visual vocabulary;
     % if limit < 1, no discount is applied
-    opts.vocabularyImageLimit = 10;
+    opts.vocabularyImageLimit = 50;
     % number of images to calculate the concept representation from; if
     % limit < 1, no discount is applied
-    opts.conceptImageLimit = 10;
+    opts.conceptImageLimit = 50;
 end
 
 % dataset object creation
