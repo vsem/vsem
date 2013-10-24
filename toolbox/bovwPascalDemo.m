@@ -31,8 +31,8 @@ for pass = 1:2
 end
 
 % image dataset and annotation folders
-data.imagesPath = fullfile(vsemRoot,'data/JPEGImages');
-data.annotationPath = fullfile(vsemRoot,'data/Annotations');
+data.imagesPath = fullfile(vsem_root,'data/JPEGImages');
+data.annotationPath = fullfile(vsem_root,'data/Annotations');
 
 
 % % spatial binning (including spatial information from image partitions)
