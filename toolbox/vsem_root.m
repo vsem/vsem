@@ -1,6 +1,6 @@
 function path = vsem_root
 % vsemRoot  Obtain VSEM root path
-%   path = vsemRoot() returns the path to the VSEM installation.
+%   path = vsem_root() returns the path to the VSEM installation.
 %
 %   
 % Authors: A1

@@ -1,9 +1,9 @@
 function path = vsem_setup(varargin)
 % vsemStartup Add VSEM Toolbox to the MATLAB path
-%   path = vsemStartup() adds the VSEM Toolbox to MATLAB path and
+%   path = vsem_setup() adds the VSEM Toolbox to MATLAB path and
 %   returns the path PATH to the VSEM package.
 %
-%   See also: vsemRoot().
+%   See also: vsem_root().
 
 % Authors: Elia Bruni and Ulisse Bordignon
 %
