@@ -19,90 +19,91 @@ function descrs = encodeImage(encoder, im, varargin)
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
-opts.cacheDir = [] ;
-opts.cacheChunkSize = 512 ;
+opts.cacheDir = [];
+opts.cacheChunkSize = 512;
 opts.localization = 'global';
 
 % TODO: Change in a more elegant solution
 opts.object = [];
 opts.surrounding = [];
 
-opts = vl_argparse(opts,varargin) ;
+opts = vl_argparse(opts,varargin);
 
-if ~iscell(im), im = {im} ; end
+if ~iscell(im), im = {im}; end
 
 % break the computation into cached chunks
-startTime = tic ;
-descrs = cell(1, numel(im)) ;
-numChunks = ceil(numel(im) / opts.cacheChunkSize) ;
+startTime = tic;
+descrs = cell(1, numel(im));
+numChunks = ceil(numel(im) / opts.cacheChunkSize);
 
 for c = 1:numChunks
-    n  = min(opts.cacheChunkSize, numel(im) - (c-1)*opts.cacheChunkSize) ;
-    chunkPath = fullfile(opts.cacheDir, sprintf('chunk-%03d.mat',c)) ;
+    n  = min(opts.cacheChunkSize, numel(im) - (c-1)*opts.cacheChunkSize);
+    chunkPath = fullfile(opts.cacheDir, sprintf('chunk-%03d.mat',c));
     if ~isempty(opts.cacheDir) && exist(chunkPath)
-        fprintf('%s: loading descriptors from %s\n', mfilename, chunkPath) ;
-        load(chunkPath, 'data') ;
+        fprintf('%s: loading descriptors from %s\n', mfilename, chunkPath);
+        load(chunkPath, 'data');
     else
-        range = (c-1)*opts.cacheChunkSize + (1:n) ;
-        fprintf('%s: processing a chunk of %d images (%3d of %3d, %5.1fs to go)\n', ...
-            mfilename, numel(range), ...
-            c, numChunks, toc(startTime) / (c - 1) * (numChunks - c + 1)) ;
-            
+        
+        range = (c-1)*opts.cacheChunkSize + (1:n);
+            fprintf('%s: processing a chunk of %d images (%3d of %3d, %5.1fs to go)\n', ...
+                mfilename, numel(range), ...
+                c, numChunks, toc(startTime) / (c - 1) * (numChunks - c + 1));
+        
         % TODO: Change in a more elegant solution
-            data = processChunk(encoder, im(range), varargin{:}) ;
-%         if isempty(opts.object) && isempty(opts.surrounding)
-%             data = processChunk(encoder, im(range)) ;
-%         elseif ~isempty(opts.object)
-%             data = processChunk(encoder, im(range), opts.object) ;
-%         elseif ~isempty(opts.surrounding)
-%             data = processChunk(encoder, im(range), opts.surrounding) ;
-%             fprintf('IM IN OBJECT')
-%         end
+        data = processChunk(encoder, im(range), varargin{:});
+        %         if isempty(opts.object) && isempty(opts.surrounding)
+        %             data = processChunk(encoder, im(range));
+        %         elseif ~isempty(opts.object)
+        %             data = processChunk(encoder, im(range), opts.object);
+        %         elseif ~isempty(opts.surrounding)
+        %             data = processChunk(encoder, im(range), opts.surrounding);
+        %             fprintf('IM IN OBJECT')
+        %         end
         
         if ~isempty(opts.cacheDir)
-            save(chunkPath, 'data') ;
+            save(chunkPath, 'data');
         end
     end
-    descrs{c} = data ;
-    clear data ;
+    descrs{c} = data;
+    clear data;
 end
-descrs = cat(2,descrs{:}) ;
+descrs = cat(2,descrs{:});
 
 % --------------------------------------------------------------------
 function psi = processChunk(encoder, im, varargin)
 % --------------------------------------------------------------------
 
-psi = cell(1,numel(im)) ;
+psi = cell(1,numel(im));
 if numel(im) > 1 & matlabpool('size') > 1
     parfor i = 1:numel(im)
-        psi{i} = encodeOne(encoder, im{i}, varargin{:}) ;
+        psi{i} = encodeOne(encoder, im{i}, varargin{:});
     end
 else
     % avoiding parfor makes debugging easier
     for i = 1:numel(im)
-        psi{i} = encodeOne(encoder, im{i}, varargin{:}) ;
+        psi{i} = encodeOne(encoder, im{i}, varargin{:});
     end
 end
-psi = cat(2, psi{:}) ;
+psi = cat(2, psi{:});
 
 
 % --------------------------------------------------------------------
 function psi = encodeOne(encoder, im, varargin)
 % --------------------------------------------------------------------
 
-im = encoder.readImageFn(im) ;
+im = encoder.readImageFn(im);
 
 %%% EXPERIMENTAL CODE START%%%
-if nargin == 2  
+if nargin == 2
     % extract feature descriptors
     %[features, frames, imageSize] = ...
     %    obj.featureExtractor.compute(imagePath);
     features = encoder.extractorFn(im);
-    imageSize = size(im) ;
+    imageSize = size(im);
 elseif nargin == 4
     % checking for errors in the input
     assert(any(strcmpi(varargin{1}, {'surrounding', 'object'})), 'Input must be either ''object'' or ''surrounding'' and the localization matrix.');
-
+    
     % assigning localization
     xmin = varargin{2}(1); xmax = varargin{2}(2); ymin = varargin{2}(3); ymax = varargin{2}(4);
     
@@ -110,8 +111,8 @@ elseif nargin == 4
         case 'surrounding'
             
             % extract feature descriptors
-            features = encoder.extractorFn(im) ;
-            imageSize = size(im) ;
+            features = encoder.extractorFn(im);
+            imageSize = size(im);
             
             % surrounding features and image size
             features = getsurroundingFeatures(features, xmin, xmax, ymin, ymax);
@@ -119,7 +120,7 @@ elseif nargin == 4
         case 'object'
             
             % extract feature descriptors
-            features = encoder.extractorFn(im) ;
+            features = encoder.extractorFn(im);
             
             % object features and image size
             features = getobjectFeatures(features, xmin, xmax, ymin, ymax);
@@ -135,83 +136,83 @@ end
 
 %%% EXPERIMENTAL CODE END%%%
 
-psi = {} ;
+psi = {};
 for i = 1:size(encoder.subdivisions,2)
     
-    minx = encoder.subdivisions(1,i) * imageSize(2) ;
-    miny = encoder.subdivisions(2,i) * imageSize(1) ;
-    maxx = encoder.subdivisions(3,i) * imageSize(2) ;
-    maxy = encoder.subdivisions(4,i) * imageSize(1) ;
+    minx = encoder.subdivisions(1,i) * imageSize(2);
+    miny = encoder.subdivisions(2,i) * imageSize(1);
+    maxx = encoder.subdivisions(3,i) * imageSize(2);
+    maxy = encoder.subdivisions(4,i) * imageSize(1);
     
     ok = ...
         minx <= features.frame(1,:) & features.frame(1,:) < maxx  & ...
-        miny <= features.frame(2,:) & features.frame(2,:) < maxy ;
+        miny <= features.frame(2,:) & features.frame(2,:) < maxy;
     
     
     descrs = encoder.projection * bsxfun(@minus, ...
         features.descr(:,ok), ...
-        encoder.projectionCenter) ;
+        encoder.projectionCenter);
     if encoder.renormalize
-        descrs = bsxfun(@times, descrs, 1./max(1e-12, sqrt(sum(descrs.^2)))) ;
+        descrs = bsxfun(@times, descrs, 1./max(1e-12, sqrt(sum(descrs.^2))));
     end
     
-    w = size(im,2) ;
-    h = size(im,1) ;
-    frames = features.frame(1:2,:) ;
-    frames = bsxfun(@times, bsxfun(@minus, frames, [w;h]/2), 1./[w;h]) ;
+    w = size(im,2);
+    h = size(im,1);
+    frames = features.frame(1:2,:);
+    frames = bsxfun(@times, bsxfun(@minus, frames, [w;h]/2), 1./[w;h]);
     
-    descrs = extendDescriptorsWithGeometry(encoder.geometricExtension, frames, descrs) ;
+    descrs = extendDescriptorsWithGeometry(encoder.geometricExtension, frames, descrs);
     
     switch encoder.type
         case 'bovw'
             [words,distances] = vl_kdtreequery(encoder.kdtree, encoder.words, ...
                 descrs, ...
-                'MaxComparisons', 100) ;
-            z = vl_binsum(zeros(encoder.numWords,1), 1, double(words)) ;
-            z = sqrt(z) ;
+                'MaxComparisons', 100);
+            z = vl_binsum(zeros(encoder.numWords,1), 1, double(words));
+            z = sqrt(z);
         case 'fv'
             z = vl_fisher(descrs, ...
                 encoder.means, ...
                 encoder.covariances, ...
                 encoder.priors, ...
-                'Improved') ;
+                'Improved');
         case 'vlad'
             [words,distances] = vl_kdtreequery(encoder.kdtree, encoder.words, ...
                 descrs, ...
-                'MaxComparisons', 15) ;
-            assign = zeros(encoder.numWords, numel(words), 'single') ;
-            assign(sub2ind(size(assign), double(words), 1:numel(words))) = 1 ;
+                'MaxComparisons', 15);
+            assign = zeros(encoder.numWords, numel(words), 'single');
+            assign(sub2ind(size(assign), double(words), 1:numel(words))) = 1;
             z = vl_vlad(descrs, ...
                 encoder.words, ...
                 assign, ...
                 'SquareRoot', ...
-                'NormalizeComponents') ;
+                'NormalizeComponents');
     end
-    z = z / max(sqrt(sum(z.^2)), 1e-12) ;
-    psi{i} = z(:) ;
+    z = z / max(sqrt(sum(z.^2)), 1e-12);
+    psi{i} = z(:);
 end
-psi = cat(1, psi{:}) ;
+psi = cat(1, psi{:});
 
 % --------------------------------------------------------------------
 function psi = getFromCache(name, cache)
 % --------------------------------------------------------------------
-[drop, name] = fileparts(name) ;
-cachePath = fullfile(cache, [name '.mat']) ;
+[drop, name] = fileparts(name);
+cachePath = fullfile(cache, [name '.mat']);
 if exist(cachePath, 'file')
-    data = load(cachePath) ;
-    psi = data.psi ;
+    data = load(cachePath);
+    psi = data.psi;
 else
-    psi = [] ;
+    psi = [];
 end
 
 % --------------------------------------------------------------------
 function storeToCache(name, cache, psi)
 % --------------------------------------------------------------------
-[drop, name] = fileparts(name) ;
-cachePath = fullfile(cache, [name '.mat']) ;
-vl_xmkdir(cache) ;
-data.psi = psi ;
-save(cachePath, '-STRUCT', 'data') ;
+[drop, name] = fileparts(name);
+cachePath = fullfile(cache, [name '.mat']);
+vl_xmkdir(cache);
+data.psi = psi;
+save(cachePath, '-STRUCT', 'data');
 
 
 %%% EXPERIMENTAL CODE START%%%
@@ -238,8 +239,8 @@ idxs = bsxfun(@or,...
 % idxs = logical(idxs);
 
 % updating features and frames
-%w = size(im,2) ;
-%h = size(im,1) ;
+%w = size(im,2);
+%h = size(im,1);
 
 
 
@@ -253,8 +254,8 @@ features.contrast = features.contrast(:,idxs);
 
 % --------------------------------------------------------------------
 function features = getobjectFeatures(features, xmin, xmax, ymin, ymax)
-% --------------------------------------------------------------------    
- % selects features from withing the annotation in an image                
+% --------------------------------------------------------------------
+% selects features from withing the annotation in an image
 
 % computing indexes for frames inside the bounding box
 idxs = bsxfun(@and,...

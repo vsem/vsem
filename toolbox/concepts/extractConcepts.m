@@ -25,7 +25,8 @@ opts.localization = 'global';
 opts.verbose = false;
 opts = vl_argparse(opts, varargin);
 opts.conceptHistParams = {'localization', opts.localization};
-conceptSpace=1;
+
+disp(opts);
 
 % Check if we have the same number of images and corresponding tags
 assert(length(imagePaths) == length(annotations), ...
@@ -38,6 +39,7 @@ if opts.verbose
     waitBar = helpers.graphics.WaitBar(length(imagePaths), text, barColor);
 end
 
+conceptSpace=[];
 conceptMatrixInitialized = false;
 % extracting concepts over the whole selected set of images
 for i = 1:size(imagePaths, 1)

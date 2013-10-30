@@ -22,7 +22,7 @@ switch lower(opts.localization)
         % extracting unique objects for the image
         objectList = cellfun(@(x)x, annotation(1,:), 'UniformOutput', false);
         objectList = unique(objectList);
-        
+          
         % computing histogram
         histogram = encodeImage(encoder, imagePath);
         

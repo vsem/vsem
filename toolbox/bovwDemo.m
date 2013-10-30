@@ -20,8 +20,7 @@
 % the terms of the BSD license (see the COPYING file).
 
 % set the demo type to 'tiny' for less computationally expensive settings
-opts.demoType = 'tiny';
-
+opts.demoType = 'notiny';
 
 data.prefix = 'bovw';
 data.dir = 'data';
@@ -90,16 +89,16 @@ vl_xmkdir(data.cacheDir);
 diary(data.diaryPath); diary on;
 disp('options:' ); disp(opts);
 
-if exist(data.encoderPath)
- encoder = load(data.encoderPath);
-else
+% if exist(data.encoderPath)
+%  encoder = load(data.encoderPath);
+% else
   encoder = trainEncoder(imagePaths, ...
                          opts.encoderParams{:});
   save(data.encoderPath, '-struct', 'encoder');
   fprintf('Traning encoder done!\n');
   diary off;
   diary on;
-end
+%end
 
 
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
