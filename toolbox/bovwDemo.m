@@ -1,10 +1,42 @@
-%function bovwPascalDemo(varargin)
+%function bovwDemo()
+% bovwDemo   Run visual concepts demo
+%    The bovwDemo runs the visual concept construction pipeline 
+%    on the Pascal dataset sample which comes together vith VSEM.    
+%
+%    By default, the demo runs with a lite option turned on. This
+%    quickly runs the pipeline with a lighter option configuration.
+%    This is used only for testing; to run the actual demo,
+%    set the lite variable to false.
+%
+%    Warning: Running the whole demo might be a slow process. Using parallel
+%    MATLAB and several cores/machiens is suggested.
+%
+
+% Author: Elia Bruni
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
 
 % set the demo type to 'tiny' for less computationally expensive settings
 opts.demoType = 'tiny';
-opts.dataset = 'pascal';
-opts.prefix = 'bovw';
-opts.dataDir = 'data';
+
+
+data.prefix = 'bovw';
+data.dir = 'data';
+for pass = 1:2
+  data.resultDir = fullfile(data.dir, data.prefix);
+  data.encoderPath = fullfile(data.resultDir, 'encoder.mat');
+  data.diaryPath = fullfile(data.resultDir, 'diary.txt');
+  data.cacheDir = fullfile(data.resultDir, 'cache');
+end
+
+% image dataset and annotation folders
+data.imagesPath = fullfile(vsem_root, data.dir, 'JPEGImages');
+data.annotationPath = fullfile(vsem_root, data.dir, 'Annotations');
+
+
 opts.encoderParams = {...
   'type', 'bovw', ...
   'numWords', 4096, ...
@@ -20,24 +52,6 @@ opts.encoderParams = {...
                                
 opts.conceptExtractParams = {'localization', 'global',...
                              'verbose', false};       
-
-for pass = 1:2
-  opts.datasetDir = fullfile(opts.dataDir, opts.dataset);
-  opts.resultDir = fullfile(opts.dataDir, opts.prefix);
-  opts.encoderPath = fullfile(opts.resultDir, 'encoder.mat');
-  opts.diaryPath = fullfile(opts.resultDir, 'diary.txt');
-  opts.cacheDir = fullfile(opts.resultDir, 'cache');
-  %opts = vl_argparse(opts,varargin);
-end
-
-% image dataset and annotation folders
-data.imagesPath = fullfile(vsem_root,'data/JPEGImages');
-data.annotationPath = fullfile(vsem_root,'data/Annotations');
-
-
-% % spatial binning (including spatial information from image partitions)
-% configuration.squareDivisions = 2;
-% configuration.horizontalDivisions = 3;
 
 % tiny settings
 if strcmpi(opts.demoType, 'tiny')
@@ -72,23 +86,32 @@ annotations = annotatedImages.imageData(:,2);
 conceptList = annotatedImages.conceptList;
 clear annotatedImages;
 
-vl_xmkdir(opts.cacheDir);
-diary(opts.diaryPath); diary on;
+vl_xmkdir(data.cacheDir);
+diary(data.diaryPath); diary on;
 disp('options:' ); disp(opts);
 
-%if exist(opts.encoderPath)
-%  encoder = load(opts.encoderPath);
-%else
+if exist(data.encoderPath)
+ encoder = load(data.encoderPath);
+else
   encoder = trainEncoder(imagePaths, ...
                          opts.encoderParams{:});
-  save(opts.encoderPath, '-struct', 'encoder');
+  save(data.encoderPath, '-struct', 'encoder');
   fprintf('Traning encoder done!\n');
   diary off;
   diary on;
-%end
+end
+
 
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
                                conceptList, opts.conceptExtractParams{:});
+                           
+% computing similarity RHO with similarity extractor
+[RHO, PVAL] = runSimilarityBenchmark(conceptSpace, 'pascal');
+
+% printing results
+fprintf('Relatedness RHO: %4.2f%%\n',RHO*100);
+fprintf('Significance (p value) of %4.3f on the Pascal similarity benchmark.\n', PVAL);
+
 
 diary off;
 diary on;

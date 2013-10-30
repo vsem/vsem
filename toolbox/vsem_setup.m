@@ -40,6 +40,7 @@ if exist('vl_version') == 3
         addpath(fullfile(root,'toolbox','concepts','utils')) ;
         addpath(fullfile(root,'toolbox','vision')) ;
         addpath(fullfile(root,'toolbox','transformations')) ;
+        addpath(fullfile(root,'toolbox','benchmarks')) ;
         
         if ~quiet
             if exist('vsem_version') == 2

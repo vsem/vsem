@@ -19,7 +19,7 @@ if nargin == 1
     conceptMatrix = conceptSpace.conceptMatrix;
 elseif nargin == 2
     % checking for errors in the input list
-    assert(all(isConcept(varargin{:})), 'Some of the selected concepts are not in the concept conceptSpace.');
+   % assert(all(isConcept(varargin{:})), 'Some of the selected concepts are not in the concept conceptSpace.');
     
     % standardizing input for one single concept list
     if ischar(varargin{:}), varargin = {varargin}; end
@@ -27,7 +27,7 @@ elseif nargin == 2
     % extracting indexes and matrix for the selected concepts
     idxs = conceptSpace.conceptIndex.values(varargin{:});
     idxs = cat(1,idxs{:});
-    
+
     conceptMatrix = conceptSpace.conceptMatrix(:,idxs);
 else
     % checking for invalid input
