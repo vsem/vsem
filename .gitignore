@@ -28,4 +28,5 @@ lib/vlfeat-0.9.17
 
 data/test
 
-doc/api/html
+doc
+docsrc
