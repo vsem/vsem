@@ -12,17 +12,17 @@ function path = vsem_setup(varargin)
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
-quiet = true ;
+quiet = true;
 
 for ai=1:length(varargin)
-    opt = varargin{ai} ;
+    opt = varargin{ai};
     switch lower(opt)
         case {'quiet'}
-            quiet = true ;
+            quiet = true;
         case {'verbose'}
-            quiet = false ;
+            quiet = false;
         otherwise
-            error('Unknown option ''%s''.', opt) ;
+            error('Unknown option ''%s''.', opt);
     end
 end
 
@@ -35,32 +35,33 @@ if exist('vl_version') == 3
         root = a;
         
         % Add VSEM to the matlab path
-        addpath(fullfile(root,'toolbox')) ;
-        addpath(fullfile(root,'toolbox','concepts')) ;
-        addpath(fullfile(root,'toolbox','concepts','utils')) ;
-        addpath(fullfile(root,'toolbox','vision')) ;
-        addpath(fullfile(root,'toolbox','transformations')) ;
-        addpath(fullfile(root,'toolbox','benchmarks')) ;
+        addpath(fullfile(root,'toolbox'));
+        addpath(fullfile(root,'toolbox','concepts'));
+        addpath(fullfile(root,'toolbox','concepts','utils'));
+        addpath(fullfile(root,'toolbox','vision'));
+        addpath(fullfile(root,'toolbox','transformations'));
+        addpath(fullfile(root,'toolbox','benchmarks'));
+        addpath(genpath(fullfile(root,'toolbox','aggregation')));
         
         if ~quiet
             if exist('vsem_version') == 2
                 vsemVersion = vsem_version;
-                fprintf('VSEM %s ready.\n', vsemVersion) ;
+                fprintf('VSEM %s ready.\n', vsemVersion);
             else
-                error('VSEM does not seem to be installed correctly. Please download the last version of VSEM at http://clic.cimec.unitn.it/vsem and try again.') ;
+                error('VSEM does not seem to be installed correctly. Please download the last version of VSEM at http://clic.cimec.unitn.it/vsem and try again.');
             end
         end
     else
-        error('VLFeat 0.9.17 does not seem to be installed. VSEM cannot run without VLFeat 0.9.17, plase install it (see http://www.vlfeat.org/) and run vsem_setup again.') ;
+        error('VLFeat 0.9.17 does not seem to be installed. VSEM cannot run without VLFeat 0.9.17, plase install it (see http://www.vlfeat.org/) and run vsem_setup again.');
         
     end
 else
-    warning('VLFeat does not seem to be installed correctly. Make sure that the MEX files are compiled.') ;
+    warning('VLFeat does not seem to be installed correctly. Make sure that the MEX files are compiled.');
 end
 
 
 
 if nargout == 0
-    clear path ;
+    clear path;
 end
 

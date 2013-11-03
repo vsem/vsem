@@ -20,7 +20,7 @@
 % the terms of the BSD license (see the COPYING file).
 
 % set the demo type to 'tiny' for less computationally expensive settings
-opts.demoType = 'notiny';
+opts.demoType = 'tiny';
 
 data.prefix = 'bovw';
 data.dir = 'data';
@@ -63,10 +63,10 @@ if strcmpi(opts.demoType, 'tiny')
     opts.vocabularySize = 10;
     % number of images to be used in the creation of visual vocabulary;
     % if limit < 1, no discount is applied
-    opts.vocabularyImageLimit = 50;
+    opts.vocabularyImageLimit = 10;
     % number of images to calculate the concept representation from; if
     % limit < 1, no discount is applied
-    opts.conceptImageLimit = 50;
+    opts.conceptImageLimit = 10;
 end
 
 % dataset object creation
@@ -101,7 +101,7 @@ disp('options:' ); disp(opts);
 %end
 
 
-conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
+conceptSpace = extractConceptsExp(encoder, imagePaths, annotations, ...
                                conceptList, opts.conceptExtractParams{:});
                            
 % computing similarity RHO with similarity extractor
