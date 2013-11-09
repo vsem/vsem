@@ -32,8 +32,10 @@ for pass = 1:2
 end
 
 % image dataset and annotation folders
-data.imagesPath = fullfile(vsem_root, data.dir, 'JPEGImages');
-data.annotationPath = fullfile(vsem_root, data.dir, 'Annotations');
+opts.datasetParams = {...
+    'annotationType', 'completeAnnotation', ...
+    'imageDir', fullfile(vsem_root, data.dir, 'JPEGImages'), ...
+    'annotations', fullfile(vsem_root, data.dir, 'Annotations')};
 
 
 opts.encoderParams = {...
@@ -64,26 +66,18 @@ if strcmpi(opts.demoType, 'tiny')
     % number of images to be used in the creation of visual vocabulary;
     % if limit < 1, no discount is applied
     opts.vocabularyImageLimit = 10;
-    % number of images to calculate the concept representation from; if
-    % limit < 1, no discount is applied
-    opts.conceptImageLimit = 10;
+    % maximum number of images used
+    opts.imageLimit = 10;
 end
 
 % dataset object creation
-dataset = datasets.VsemDataset(data.imagesPath, 'annotationFolder', ...
-    data.annotationPath);
+[imagePaths, annotations, conceptList] = ...
+    readDataset(opts.datasetParams{:})
 
 if strcmpi(opts.demoType, 'tiny')
-    annotatedImages = dataset.getAnnotatedImages('imageLimit', ...
-        opts.conceptImageLimit);
-else
-    annotatedImages = dataset.getAnnotatedImages();
+    [imagePaths, annotations] = ...
+        randomDatasetSubset(opts.imageLimit, imagePaths, annotations);
 end
-
-imagePaths = annotatedImages.imageData(:,1);
-annotations = annotatedImages.imageData(:,2);
-conceptList = annotatedImages.conceptList;
-clear annotatedImages;
 
 vl_xmkdir(data.cacheDir);
 diary(data.diaryPath); diary on;
