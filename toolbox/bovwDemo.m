@@ -95,7 +95,7 @@ disp('options:' ); disp(opts);
 %end
 
 
-conceptSpace = extractConceptsExp(encoder, imagePaths, annotations, ...
+conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
                                conceptList, opts.conceptExtractParams{:});
                            
 % computing similarity RHO with similarity extractor
