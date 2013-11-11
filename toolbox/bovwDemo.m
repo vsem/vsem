@@ -37,7 +37,7 @@ opts.datasetParams = {...
     'imageDir', fullfile(vsem_root, data.dir, 'JPEGImages'), ...
     'annotations', fullfile(vsem_root, data.dir, 'Annotations')};
 
-
+% feature extraction and encoding parameters
 opts.encoderParams = {...
   'type', 'bovw', ...
   'numWords', 4096, ...
@@ -50,7 +50,8 @@ opts.encoderParams = {...
   'extractorFn', @(x) getDenseSIFT(x, ...
                                    'step', 4, ...
                                    'scales', 2.^(1:-.5:-3))};
-                               
+
+% concept extraction parameters
 opts.conceptExtractParams = {'localization', 'global',...
                              'verbose', false};       
 
@@ -62,17 +63,13 @@ if strcmpi(opts.demoType, 'tiny')
         'extractorFn', @(x) getDenseSIFT(x, ...
                                          'step', 4, ...
                                          'scales', 2.^(1:-.5:-3))};
-    opts.vocabularySize = 10;
-    % number of images to be used in the creation of visual vocabulary;
-    % if limit < 1, no discount is applied
-    opts.vocabularyImageLimit = 10;
     % maximum number of images used
-    opts.imageLimit = 10;
+    opts.imageLimit = 200;
 end
 
-% dataset object creation
+% dataset creation
 [imagePaths, annotations, conceptList] = ...
-    readDataset(opts.datasetParams{:})
+    readDataset(opts.datasetParams{:});
 
 if strcmpi(opts.demoType, 'tiny')
     [imagePaths, annotations] = ...
@@ -94,16 +91,19 @@ disp('options:' ); disp(opts);
   diary on;
 %end
 
-
+% extract the concept space
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
                                conceptList, opts.conceptExtractParams{:});
                            
-% computing similarity RHO with similarity extractor
+% compute similarity RHO with similarity extractor
 [RHO, PVAL] = runSimilarityBenchmark(conceptSpace, 'pascal');
 
-% printing results
-fprintf('Relatedness RHO: %4.2f%%\n',RHO*100);
-fprintf('Significance (p value) of %4.3f on the Pascal similarity benchmark.\n', PVAL);
+% print results
+fprintf('----------------------------------------------------\n');
+fprintf('           PASCAL SIMILARITY BENCHMARK\n')
+fprintf('           Relatedness (RHO): %4.2f%%\n',RHO*100);
+fprintf('           Significance (P-VALUE): %4.3f.\n', PVAL);
+fprintf('----------------------------------------------------\n');
 
 
 diary off;

@@ -25,7 +25,7 @@ function [imagePaths, annotations, conceptList] = readDataset(varargin)
                     'No annotation file %s was located', annotationPath);
 
                 % extracting annotation
-                annotationFile = datasets.helpers.readXML(annotationPath);
+                annotationFile = readXML(annotationPath);
 
                 % extracting the objects' list for the ith image
                 objectNames = {annotationFile.annotation.object.name};

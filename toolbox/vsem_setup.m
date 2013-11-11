@@ -36,6 +36,8 @@ if exist('vl_version') == 3
         
         % Add VSEM to the matlab path
         addpath(fullfile(root,'toolbox'));
+        addpath(fullfile(root,'toolbox','dataset'));
+        addpath(fullfile(root,'toolbox','dataset', 'helpers'));
         addpath(fullfile(root,'toolbox','concepts'));
         addpath(fullfile(root,'toolbox','concepts','utils'));
         addpath(fullfile(root,'toolbox','concepts','aggregation'));
