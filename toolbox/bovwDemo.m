@@ -67,7 +67,7 @@ if strcmpi(opts.demoType, 'tiny')
     opts.imageLimit = 200;
 end
 
-% dataset creation
+% read dataset
 [imagePaths, annotations, conceptList] = ...
     readDataset(opts.datasetParams{:});
 
