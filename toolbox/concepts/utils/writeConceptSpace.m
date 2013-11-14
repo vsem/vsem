@@ -26,7 +26,7 @@ formatString = strcat('%s %f', sf);
 formatString = strcat(formatString, '\n');
 
 for concept = getConceptList(conceptSpace)
-    fprintf(fidSave, formatString, concept{:}, conceptSpace.getConceptMatrix(concept));
+    fprintf(fidSave, formatString, concept{:}, getConceptMatrix(conceptSpace, concept));
 end
 fclose(fidSave);
 
