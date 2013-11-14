@@ -1,4 +1,4 @@
-function [RHO, PVAL] = runSimilarityBenchmark(conceptSpace, benchmarkName, varargin)
+function [RHO, PVAL, coverage] = runSimilarityBenchmark(conceptSpace, benchmarkName, varargin)
 % computeBenchmark Compute similarity becnhmark
 %   [RHO, PVAL] = obj.computeBenchmark(obj, concepts,
 %   similarityExtractor) computes the chosen similarity benchmark
@@ -38,7 +38,8 @@ switch benchmarkName
 end
 
 
-[benchmarkPairs, benchmarkScores] = filterBenchmark(benchmark, conceptSpace);
+[benchmarkPairs, benchmarkScores, coverage] = filterBenchmark(benchmark, conceptSpace);
+
 
 if numel(benchmarkPairs) > 0
     modelScores = computeSimilarity(conceptSpace, ...
@@ -66,7 +67,7 @@ benchmark{3} = goldScores;
 end
 
 % -------------------------------------------------------------------------
-function [benchmarkPairs, benchmarkScores]= filterBenchmark(benchmark, conceptSpace)
+function [benchmarkPairs, benchmarkScores, coverage]= filterBenchmark(benchmark, conceptSpace)
 % -------------------------------------------------------------------------
 % Retains only the benchmark pairs and scores for which there
 % is a concept representation.
@@ -81,4 +82,6 @@ for i = 1:numel(benchmark{1})
         idx = idx + 1;
     end
 end
+coverage=[idx,length(benchmark{1})];
+
 end
