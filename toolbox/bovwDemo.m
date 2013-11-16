@@ -1,7 +1,7 @@
 %function bovwDemo()
 % bovwDemo   Run visual concepts demo
-%    The bovwDemo runs the visual concept construction pipeline 
-%    on the Pascal dataset sample which comes together vith VSEM.    
+%    The bovwDemo runs the visual concept construction pipeline
+%    on the Pascal dataset sample which comes together vith VSEM.
 %
 %    By default, the demo runs with a lite option turned on. This
 %    quickly runs the pipeline with a lighter option configuration.
@@ -25,10 +25,13 @@ opts.demoType = 'tiny';
 data.prefix = 'bovw';
 data.dir = 'data';
 for pass = 1:2
-  data.resultDir = fullfile(data.dir, data.prefix);
-  data.encoderPath = fullfile(data.resultDir, 'encoder.mat');
-  data.diaryPath = fullfile(data.resultDir, 'diary.txt');
-  data.cacheDir = fullfile(data.resultDir, 'cache');
+    data.resultDir = fullfile(data.dir, data.prefix);
+    data.imagePathsPath = fullfile(data.resultDir, 'imagePaths.mat');
+    data.annotationsPath = fullfile(data.resultDir, 'annotations.mat');
+    data.conceptListPath = fullfile(data.resultDir, 'conceptList.mat');
+    data.encoderPath = fullfile(data.resultDir, 'encoder.mat');
+    data.diaryPath = fullfile(data.resultDir, 'diary.txt');
+    data.cacheDir = fullfile(data.resultDir, 'cache');
 end
 
 % image dataset and annotation folders
@@ -39,21 +42,21 @@ opts.datasetParams = {...
 
 % feature extraction and encoding parameters
 opts.encoderParams = {...
-  'type', 'bovw', ...
-  'numWords', 4096, ...
-  'layouts', {'1x1'}, ...
-  'geometricExtension', 'xy', ...
-  'numPcaDimensions', 100, ...
-  'whitening', true, ...
-  'whiteningRegul', 0.01, ...
-  'renormalize', true, ...
-  'extractorFn', @(x) getDenseSIFT(x, ...
-                                   'step', 4, ...
-                                   'scales', 2.^(1:-.5:-3))};
+    'type', 'bovw', ...
+    'numWords', 4096, ...
+    'layouts', {'1x1'}, ...
+    'geometricExtension', 'xy', ...
+    'numPcaDimensions', 100, ...
+    'whitening', true, ...
+    'whiteningRegul', 0.01, ...
+    'renormalize', true, ...
+    'extractorFn', @(x) getDenseSIFT(x, ...
+    'step', 4, ...
+    'scales', 2.^(1:-.5:-3))};
 
 % concept extraction parameters
 opts.conceptExtractParams = {'localization', 'global',...
-                             'verbose', false};       
+    'verbose', false};
 
 % tiny settings
 if strcmpi(opts.demoType, 'tiny')
@@ -61,15 +64,26 @@ if strcmpi(opts.demoType, 'tiny')
         'type', 'bovw', ...
         'numWords', 128, ...
         'extractorFn', @(x) getDenseSIFT(x, ...
-                                         'step', 4, ...
-                                         'scales', 2.^(1:-.5:-3))};
+        'step', 4, ...
+        'scales', 2.^(1:-.5:-3))};
     % maximum number of images used
     opts.imageLimit = 200;
 end
 
-% read dataset
-[imagePaths, annotations, conceptList] = ...
-    readDataset(opts.datasetParams{:});
+
+if exist(data.imagePathsPath) & exist(data.annotationsPath) & exist(data.conceptListPath)
+    fprintf('Loading the dataset into memory...');
+    load(data.imagePathsPath);
+    load(data.annotationsPath);
+    load(data.conceptListPath);
+else
+    % read dataset
+    [imagePaths, annotations, conceptList] = ...
+        readDataset(opts.datasetParams{:});
+    save(data.imagePathsPath, 'imagePaths');
+    save(data.annotationsPath, 'annotations');
+    save(data.conceptListPath, 'conceptList');
+end
 
 if strcmpi(opts.demoType, 'tiny')
     [imagePaths, annotations] = ...
@@ -80,21 +94,21 @@ vl_xmkdir(data.cacheDir);
 diary(data.diaryPath); diary on;
 disp('options:' ); disp(opts);
 
-% if exist(data.encoderPath)
-%  encoder = load(data.encoderPath);
-% else
-  encoder = trainEncoder(imagePaths, ...
-                         opts.encoderParams{:});
-  save(data.encoderPath, '-struct', 'encoder');
-  fprintf('Traning encoder done!\n');
-  diary off;
-  diary on;
-%end
+if exist(data.encoderPath)
+    encoder = load(data.encoderPath);
+else
+    encoder = trainEncoder(imagePaths, ...
+        opts.encoderParams{:});
+    save(data.encoderPath, '-struct', 'encoder');
+    fprintf('Traning encoder done!\n');
+    diary off;
+    diary on;
+end
 
 % extract the concept space
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
-                               conceptList, opts.conceptExtractParams{:});
-                           
+    conceptList, opts.conceptExtractParams{:});
+
 % compute similarity RHO with similarity extractor
 [RHO, PVAL, coverage] = runSimilarityBenchmark(conceptSpace, 'pascal');
 
