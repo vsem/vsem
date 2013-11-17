@@ -18,11 +18,10 @@ end
 
 switch lower(opts.localization)
     case 'global'
-        
         % extracting unique objects for the image
-        objectList = cellfun(@(x)x, annotation(1,:), 'UniformOutput', false);
+        objectList = cellfun(@(x)x, {annotation(1,:)}, 'UniformOutput', false);
         objectList = unique(objectList);
-          
+         
         % computing histogram
         histogram = encodeImage(encoder, imagePath);
         

@@ -1,13 +1,48 @@
 function [imagePaths, annotations, conceptList] = readDataset(varargin)
+% readDataset dataset reader
+%
+%   READDATASET(..., 'OPT', VAL, ...) accepts the following options:
+%
+%   inputFormat:: 'completeAnnotation'
+%
+%      The following input types are available:
+%
+%      'completeAnnotation'
+%         Complete xml annotation of the images, bearing localization, is
+%         available. Requires 'annotationFolder' option and value.
+%
+%      'conceptFile'
+%         A single .txt file recording, for each line, the name of a
+%         concept and the images tagged with that concept. 
+%
+%      'conceptfolder'
+%         Images are arranged, inside the imagesPath folder, in subfolders
+%         named with the tag/object their images content represents.
+%
+%      'imageFile'
+%         A single .txt file recording, for each line, the name of an image
+%         and the concepts which are tags for/objects into that image.
+%
+%      'descFiles'
+%         For each image in the image folder ('imagesPath/filename.jpg')
+%         there is a corresponding annotation file with concepts, one at a 
+%         line ('annotationFolder/filename.jpg.desc').
 
-    opts.annotationType = 'completeAnnotation';
+% Author: Ulisse Bordignon
+
+% AUTORIGHTS
+%
+% This file is part of the VSEM library and is made available under
+% the terms of the BSD license (see the COPYING file).
+
+    opts.inputFormat = 'completeAnnotation';
     opts.imageDir = '';
     opts.annotations = '';
     opts.filemask = '.*(jpg|gif)';
 
     opts = vl_argparse(opts, varargin);
 
-    switch opts.annotationType
+    switch opts.inputFormat
         case 'completeAnnotation'
             % complete list of images from the images database
             imagePaths = listFiles(opts.imageDir, opts.filemask);

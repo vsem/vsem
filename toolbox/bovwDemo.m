@@ -36,7 +36,7 @@ end
 
 % image dataset and annotation folders
 opts.datasetParams = {...
-    'annotationType', 'completeAnnotation', ...
+    'inputFormat', 'completeAnnotation', ...
     'imageDir', fullfile(vsem_root, data.dir, 'JPEGImages'), ...
     'annotations', fullfile(vsem_root, data.dir, 'Annotations')};
 
@@ -71,19 +71,14 @@ if strcmpi(opts.demoType, 'tiny')
 end
 
 
-if exist(data.imagePathsPath) & exist(data.annotationsPath) & exist(data.conceptListPath)
-    fprintf('Loading the dataset into memory...');
-    load(data.imagePathsPath);
-    load(data.annotationsPath);
-    load(data.conceptListPath);
-else
-    % read dataset
-    [imagePaths, annotations, conceptList] = ...
-        readDataset(opts.datasetParams{:});
-    save(data.imagePathsPath, 'imagePaths');
-    save(data.annotationsPath, 'annotations');
-    save(data.conceptListPath, 'conceptList');
-end
+
+% read dataset
+[imagePaths, annotations, conceptList] = ...
+    readDataset(opts.datasetParams{:});
+save(data.imagePathsPath, 'imagePaths');
+save(data.annotationsPath, 'annotations');
+save(data.conceptListPath, 'conceptList');
+
 
 if strcmpi(opts.demoType, 'tiny')
     [imagePaths, annotations] = ...
