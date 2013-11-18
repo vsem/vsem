@@ -70,6 +70,18 @@ if strcmpi(opts.demoType, 'tiny')
     opts.imageLimit = 200;
 end
 
+% color extractor 
+% TODO: it doesn't work yet
+if strcmpi(opts.demoType, 'color')
+    opts.encoderParams = {...
+        'type', 'bovw', ...
+        'numWords', 128, ...
+        'extractorFn', @(x) getColorFeatures(x), ...
+        'readImageFn', @(x) readColorImage(x)};
+    % maximum number of images used
+    opts.imageLimit = 200;
+end
+
 
 
 % read dataset
