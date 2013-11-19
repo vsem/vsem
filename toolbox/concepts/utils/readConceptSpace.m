@@ -1,6 +1,6 @@
 function conceptSpace = readConceptSpace(filePath, varargin)
 % readConceptSpace Read a concept space from file
-%	readConceptSpace(filePath, varargin) reads an ASCII file in the format
+%   readConceptSpace(filePath, varargin) reads an ASCII file in the format
 %
 %   concept1 feature1 feature2, ..., featureN
 %   concept2 feature1 feature2, ..., featureN
