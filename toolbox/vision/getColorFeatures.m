@@ -1,7 +1,4 @@
 function [feats, frames, imsize] = getColorFeatures(image)
-% Read and convert image to double precision
-% image = im2double(cfext.readImage(imagePath));
-% % image = im2double(image);
 
 imsize = size(image);
 fprintf('herexxxxxxxxxxxxx');

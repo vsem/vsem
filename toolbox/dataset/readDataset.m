@@ -163,6 +163,7 @@ function [imagePaths, annotations, conceptList] = readDataset(varargin)
 
             % iteration over the number of concepts
             for i = 1:conceptsNumber
+                fprintf('Now indexing concept number %i of %d...\n',i,conceptsNumber);
                 % extracting concept name and associated images
                 conceptName = conceptList{i};
 
