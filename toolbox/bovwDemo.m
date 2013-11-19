@@ -129,6 +129,5 @@ fprintf('           Relatedness (RHO): %4.2f%%\n',RHO*100);
 fprintf('           Significance (P-VALUE): %4.3f.\n', PVAL);
 fprintf('----------------------------------------------------\n');
 
-
 diary off;
 diary on;

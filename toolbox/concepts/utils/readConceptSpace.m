@@ -7,10 +7,10 @@ function conceptSpace = readConceptSpace(filePath, varargin)
 %   ...      ...      ...            ...
 %   conceptM feature1 feature2, ..., featureN
 %
-%  Options:  
+%   Options:  
 %
-%  numberOfFeatures:: []
-%   If you specify the number of features might be slightly faster.
+%   numberOfFeatures:: []
+%    If you specify the number of features might be slightly faster.
 % 
 
 % Authors: Irina Sergienya, Elia Bruni
