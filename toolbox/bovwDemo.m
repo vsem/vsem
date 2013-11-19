@@ -8,9 +8,6 @@
 %    This is used only for testing; to run the actual demo,
 %    set the lite variable to false.
 %
-%    Warning: Running the whole demo might be a slow process. Using parallel
-%    MATLAB and several cores/machiens is suggested.
-%
 
 % Author: Elia Bruni
 
@@ -20,8 +17,9 @@
 % the terms of the BSD license (see the COPYING file).
 
 % set the demo type to 'tiny' for less computationally expensive settings
-opts.demoType = 'tiny';
-
+opts.demoType = 'color';
+% if true it reuses previously computed and saved data
+opts.reuseSavedData = false;
 data.prefix = 'bovw';
 data.dir = 'data';
 for pass = 1:2
@@ -37,8 +35,8 @@ end
 % image dataset and annotation folders
 opts.datasetParams = {...
     'inputFormat', 'completeAnnotation', ...
-    'imageDir', fullfile(vsem_root, data.dir, 'JPEGImages'), ...
-    'annotations', fullfile(vsem_root, data.dir, 'Annotations')};
+    'imageDir', fullfile(vsem_root, data.dir, 'images'), ...
+    'annotations', fullfile(vsem_root, data.dir, 'annotations')};
 
 % feature extraction and encoding parameters
 opts.encoderParams = {...
@@ -67,11 +65,10 @@ if strcmpi(opts.demoType, 'tiny')
         'step', 4, ...
         'scales', 2.^(1:-.5:-3))};
     % maximum number of images used
-    opts.imageLimit = 200;
+    opts.imageLimit = 50;
 end
 
-% color extractor 
-% TODO: it doesn't work yet
+% color extractor
 if strcmpi(opts.demoType, 'color')
     opts.encoderParams = {...
         'type', 'bovw', ...
@@ -79,18 +76,23 @@ if strcmpi(opts.demoType, 'color')
         'extractorFn', @(x) getColorFeatures(x), ...
         'readImageFn', @(x) readColorImage(x)};
     % maximum number of images used
-    opts.imageLimit = 200;
+    opts.imageLimit = 50;
 end
 
-
-
-% read dataset
-[imagePaths, annotations, conceptList] = ...
-    readDataset(opts.datasetParams{:});
-save(data.imagePathsPath, 'imagePaths');
-save(data.annotationsPath, 'annotations');
-save(data.conceptListPath, 'conceptList');
-
+if exist(data.imagePathsPath) & exist(data.annotationsPath)...
+        & exist(data.conceptListPath) & opts.reuseSavedData
+    % load dataset
+    imagePaths = load(data.imagePathsPath);
+    annotations = load(data.annotationsPath);
+    conceptList = load(data.conceptListPath);
+else    
+    % read dataset
+    [imagePaths, annotations, conceptList] = ...
+        readDataset(opts.datasetParams{:});
+    save(data.imagePathsPath, 'imagePaths');
+    save(data.annotationsPath, 'annotations');
+    save(data.conceptListPath, 'conceptList');
+end
 
 if strcmpi(opts.demoType, 'tiny')
     [imagePaths, annotations] = ...
@@ -101,7 +103,7 @@ vl_xmkdir(data.cacheDir);
 diary(data.diaryPath); diary on;
 disp('options:' ); disp(opts);
 
-if exist(data.encoderPath)
+if exist(data.encoderPath) & opts.reuseSavedData
     encoder = load(data.encoderPath);
 else
     encoder = trainEncoder(imagePaths, ...

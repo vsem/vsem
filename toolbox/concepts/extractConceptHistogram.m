@@ -19,7 +19,13 @@ end
 switch lower(opts.localization)
     case 'global'
         % extracting unique objects for the image
-        objectList = cellfun(@(x)x, {annotation(1,:)}, 'UniformOutput', false);
+        % TODO: uniform readDataset so that this check is nod nedeed
+        % anymore
+        if iscell(annotation)
+            objectList = cellfun(@(x)x, annotation(1,:), 'UniformOutput', false);
+        else
+            objectList = cellfun(@(x)x, {annotation(1,:)}, 'UniformOutput', false);
+        end
         objectList = unique(objectList);
          
         % computing histogram

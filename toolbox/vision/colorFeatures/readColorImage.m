@@ -8,12 +8,11 @@ function [im, scale] = readColorImage(imagePath)
 %    READIMAGE(IM) where IM is already an image applies only the
 %    standardization to it.
 
-% Author: Andrea Vedaldi
+% Author: Elia Bruni
 
-% Copyright (C) 2013 Andrea Vedaldi
-% All rights reserved.
+% AUTORIGHTS
 %
-% This file is part of the VLFeat library and is made available under
+% This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
 if ischar(imagePath)
@@ -25,6 +24,12 @@ if ischar(imagePath)
 else
   im = imagePath ;
 end
+% Check if the image is a truecolor M-by-N-by-3 array
+if size(im, 3) == 1
+    err = MException('VSEM:readColorImage', 'Grayscale image: %s', ...
+        imagePath);
+    throw(err)
+end
 
 im = im2double(im) ;
 
@@ -34,4 +39,3 @@ if (size(im,1) > 480)
   im = imresize(im, scale) ;
   im = min(max(im,0),1) ;
 end
-

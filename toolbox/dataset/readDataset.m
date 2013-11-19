@@ -188,12 +188,14 @@ function [imagePaths, annotations, conceptList] = readDataset(varargin)
                 % updating imageData with the new images
                 imagePaths = vertcat(imagePaths, images(newImageIdxs));
                 annotations(end+1:length(imagePaths)) = {conceptName};
-
+                
+               
                 % updating annotation for and assigning back those
                 % entries which are already in imageData
                 annots = annotations(usedImageIdxs);
                 annots = cellfun(@(x)(horzcat(x, {conceptName})), ...
                     annots, 'UniformOutput', false);
+                
                 annotations(usedImageIdxs) = annots; 
             end
             % sorting concepts

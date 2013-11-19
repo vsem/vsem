@@ -22,6 +22,8 @@ opts.similarity = 'cosine';
 opts.correlation = 'spearman';
 opts = vl_argparse(opts, varargin);
 
+assert(~isempty(conceptSpace), 'Empty concept space! The benchmark cannot be ran.');
+
 
 % Prepares the chosen benchmark for computation.
 switch benchmarkName
