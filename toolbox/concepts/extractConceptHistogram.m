@@ -18,6 +18,7 @@ end
 
 switch lower(opts.localization)
     case 'global'
+        
         % extracting unique objects for the image
         % TODO: uniform readDataset so that this check is nod nedeed
         % anymore
@@ -27,11 +28,10 @@ switch lower(opts.localization)
             objectList = cellfun(@(x)x, {annotation(1,:)}, 'UniformOutput', false);
         end
         objectList = unique(objectList);
-         
         % computing histogram
         histogram = encodeImage(encoder, imagePath);
         
-    case 'surrounding'        
+    case 'surrounding'
         
         % checking for input errors
         assert(size(annotation, 1) == 2,'Localization data unavailable, check annotation or select ''global'' localization.')
@@ -57,7 +57,7 @@ switch lower(opts.localization)
         histogram = cat(2, histogram{:});
         
     case 'object'
-
+        
         % checking for input errors
         assert(size(annotation, 1) == 2,'Localization data unavailable, check annotation or select ''global'' localization.')
         

@@ -17,7 +17,7 @@
 % the terms of the BSD license (see the COPYING file).
 
 % set the demo type to 'tiny' for less computationally expensive settings
-opts.demoType = 'color';
+opts.demoType = 'tiny';
 % if true it reuses previously computed and saved data
 opts.reuseSavedData = false;
 data.prefix = 'bovw';
@@ -37,6 +37,7 @@ opts.datasetParams = {...
     'inputFormat', 'completeAnnotation', ...
     'imageDir', fullfile(vsem_root, data.dir, 'images'), ...
     'annotations', fullfile(vsem_root, data.dir, 'annotations')};
+
 
 % feature extraction and encoding parameters
 opts.encoderParams = {...
@@ -65,7 +66,7 @@ if strcmpi(opts.demoType, 'tiny')
         'step', 4, ...
         'scales', 2.^(1:-.5:-3))};
     % maximum number of images used
-    opts.imageLimit = 50;
+    opts.imageLimit = 10;
 end
 
 % color extractor
