@@ -52,7 +52,7 @@ if numel(benchmarkPairs) > 0
                        'type', opts.correlation, ...
                        'rows', 'complete');
 else
-    fprintf(1, 'No overlap between benchmark and concept space.\n');
+    fprintf(1, '\n WARNING: No overlap between benchmark and concept space!\n\n');
     RHO = NaN;
     PVAL = NaN;
 end
@@ -84,6 +84,6 @@ for i = 1:numel(benchmark{1})
         idx = idx + 1;
     end
 end
-coverage=[idx,length(benchmark{1})];
+coverage=[idx-1,length(benchmark{1})];
 
 end

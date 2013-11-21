@@ -39,7 +39,13 @@ opts.inputFormat = 'completeAnnotation';
 opts.imageDir = '';
 opts.annotations = '';
 opts.filemask = '.*(jpg|gif)';
-opts.doubleCheckImages = true;
+
+% With this option on, corrputed images
+% are removed from the image paths.
+% This option slows down the reading
+% process a lot!
+opts.doubleCheckImages = false;
+
 opts.readImageFn = @readImage;
 
 opts = vl_argparse(opts, varargin);
@@ -137,9 +143,6 @@ switch opts.inputFormat
             end
             
             if ~(isempty(conceptImages))
-                
-                
-                
                 % indexes for images that are and are not already in the output list
                 newImageIdxs = ismember(conceptImages, imagePaths) == 0;
                 usedImageIdxs = find(ismember(imagePaths, conceptImages));
@@ -358,27 +361,29 @@ switch opts.inputFormat
         
 end % switch
 
-    function filelist = listFiles(directory, mask)
-        % return list of full paths to files in a directory
-        % whose filenames match the given mask
-        
-        filelist = dir(directory); % list folder content
-        filelist = {filelist([filelist.isdir] == 0).name}; % keep only files
-        filelist = regexpi(filelist, mask,'match'); % match filenames
-        % remove filenames that didn't match and transpose to make
-        % a Nx1 cell array
-        filelist = [filelist{:}]';
-        filelist = cellfun(@(x)(fullfile(directory, x)), filelist, ...
-            'UniformOutput', false);
-    end % readFiles
 
 end % prepareImages
 
 
 % -------------------------------------------------------------------------
+function filelist = listFiles(directory, mask)
+% -------------------------------------------------------------------------
+% Return list of full paths to files in a directory
+% whose filenames match the given mask
+
+filelist = dir(directory); % list folder content
+filelist = {filelist([filelist.isdir] == 0).name}; % keep only files
+filelist = regexpi(filelist, mask,'match'); % match filenames
+% remove filenames that didn't match and transpose to make
+% a Nx1 cell array
+filelist = [filelist{:}]';
+filelist = cellfun(@(x)(fullfile(directory, x)), filelist, ...
+    'UniformOutput', false);
+end % readFiles
+
+% -------------------------------------------------------------------------
 function validPaths = doubleCheckImages(readImageFn, pathsToBeChecked)
 % -------------------------------------------------------------------------
-
 % This function removes corrputed images from the image paths.
 
 validPaths = {};
