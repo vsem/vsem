@@ -13,7 +13,7 @@ function conceptSpace = extractConcepts(encoder, imagePaths, annotations, concep
 %   for getAnnotatedImages method to review available options.
 %
 
-% Author: Ulisse Bordignon
+% Author: Ulisse Bordignon and Elia Bruni
 
 % AUTORIGHTS
 %
@@ -69,7 +69,7 @@ for i = 1:size(imagePaths, 1)
             conceptMatrixInitialized = true;
         end
         
-        % pdating concept space with the previously extracted data
+        % updating concept space with the previously extracted data
         conceptSpace = updateConceptMatrix(conceptSpace, histogram, objectList);
         
     catch ME

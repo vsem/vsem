@@ -51,15 +51,7 @@ for c = 1:numChunks
         
         % TODO: Change in a more elegant solution
         data = processChunk(encoder, im(range), varargin{:});
-        %         if isempty(opts.object) && isempty(opts.surrounding)
-        %             data = processChunk(encoder, im(range));
-        %         elseif ~isempty(opts.object)
-        %             data = processChunk(encoder, im(range), opts.object);
-        %         elseif ~isempty(opts.surrounding)
-        %             data = processChunk(encoder, im(range), opts.surrounding);
-        %             fprintf('IM IN OBJECT')
-        %         end
-        
+
         if ~isempty(opts.cacheDir)
             save(chunkPath, 'data');
         end

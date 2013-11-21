@@ -1,7 +1,7 @@
-function encoder = trainEncoder(images, varargin)
+function encoder = trainEncoder(imagePaths, varargin)
 % TRAINENCODER   Train image encoder: BoVW, VLAD, FV
-%   ENCODER = TRAINENCOER(IMAGES) trains a BoVW encoder from the
-%   specified list of images IMAGES.
+%   ENCODER = TRAINENCOER(imagePaths) trains a BoVW encoder from the
+%   specified list of imagePaths imagePaths.
 %
 %   TRAINENCODER(..., 'OPT', VAL, ...) accepts the following options:
 %
@@ -66,6 +66,7 @@ opts.geometricExtension = 'none';
 opts.subdivisions = zeros(4,0);
 opts.readImageFn = @readImage;
 opts.extractorFn = @getDenseSIFT;
+opts.numTrainImages = 10000;
 opts.lite = false;
 opts = vl_argparse(opts, varargin);
 
@@ -119,6 +120,9 @@ if isempty(opts.numSamplesPerWord)
     end
 end
 
+ids = vl_colsubset(1:length(imagePaths), opts.numTrainImages);
+trainPaths = imagePaths(ids);
+
 disp(opts);
 
 encoder.type = opts.type;
@@ -130,14 +134,14 @@ encoder.renormalize = opts.renormalize;
 encoder.geometricExtension = opts.geometricExtension;
 
 %% Step 0: obtain sample image descriptors
-numImages = numel(images);
+numImages = numel(trainPaths);
 numDescrsPerImage = ceil(opts.numWords * opts.numSamplesPerWord / numImages);
 descrs = cell(1,numImages);
 frames = cell(1,numImages);
 parfor i = 1:numImages
     try
-        fprintf('%s: reading: %s\n', mfilename, images{i});
-        im = encoder.readImageFn(images{i});
+        fprintf('%s: reading: %s\n', mfilename, trainPaths{i});
+        im = encoder.readImageFn(trainPaths{i});
         w = size(im,2);
         h = size(im,1);
         features = encoder.extractorFn(im);
@@ -148,7 +152,7 @@ parfor i = 1:numImages
         frames{i} = features.frame(:,sel);
         frames{i} = bsxfun(@times, bsxfun(@minus, frames{i}(1:2,:), [w;h]/2), 1./[w;h]);
     catch
-        fprintf(1, 'Error reading file: %s\n', images{i});
+        fprintf(1, 'Error reading file: %s\n', trainPaths{i});
     end
 end
 descrs = cat(2, descrs{:});
