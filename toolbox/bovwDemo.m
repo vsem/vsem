@@ -16,12 +16,18 @@
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
+
+% --------------------------------------------------------------------
+%                                                        Setup options
+% --------------------------------------------------------------------
+
 % set the demo type to 'tiny' for less computationally expensive settings
 opts.demoType = 'tiny';
 % if true it reuses previously computed and saved data
 opts.reuseSavedData = false;
 data.prefix = 'bovw';
 data.dir = 'data';
+opts.randSeed = 1 ;
 
 for pass = 1:2
     data.resultDir = fullfile(data.dir, data.prefix);
@@ -35,6 +41,7 @@ end
 
 % image dataset and annotation folders
 opts.datasetParams = {...
+    'maxNumTrainImagesPerConcept', 100, ...,
     'inputFormat', 'completeAnnotation', ...
     'imageDir', fullfile(vsem_root, data.dir, 'images'), ...
     'annotations', fullfile(vsem_root, data.dir, 'annotations')};
@@ -42,7 +49,7 @@ opts.datasetParams = {...
 
 % feature extraction and encoding parameters
 opts.encoderParams = {...
-    'numTrainImages', 10000, ...
+    'maxNumTrainImages', 10000, ...
     'type', 'bovw', ...
     'numWords', 4096, ...
     'layouts', {'1x1'}, ...
@@ -56,7 +63,8 @@ opts.encoderParams = {...
     'scales', 2.^(1:-.5:-3))};
 
 % concept extraction parameters
-opts.conceptExtractParams = {'localization', 'global',...
+opts.conceptExtractParams = {...
+    'localization', 'global',...
     'verbose', false};
 
 % tiny settings
@@ -82,19 +90,31 @@ if strcmpi(opts.demoType, 'color')
     opts.imageLimit = 50;
 end
 
+randn('state',opts.randSeed) ;
+rand('state',opts.randSeed) ;
+vl_twister('state',opts.randSeed) ;
+
+
+% --------------------------------------------------------------------
+%                                                        Read data set
+% --------------------------------------------------------------------
+
 if exist(data.imagePathsPath) & exist(data.annotationsPath)...
         & exist(data.conceptListPath) & opts.reuseSavedData
     % load dataset
     imagePaths = load(data.imagePathsPath);
     annotations = load(data.annotationsPath);
     conceptList = load(data.conceptListPath);
-else    
+else
     % read dataset
     [imagePaths, annotations, conceptList] = ...
         readDataset(opts.datasetParams{:});
     save(data.imagePathsPath, 'imagePaths');
     save(data.annotationsPath, 'annotations');
     save(data.conceptListPath, 'conceptList');
+    fprintf('Reading dataset done!\n\n');
+    diary off;
+    diary on;
 end
 
 if strcmpi(opts.demoType, 'tiny')
@@ -102,9 +122,12 @@ if strcmpi(opts.demoType, 'tiny')
         randomDatasetSubset(opts.imageLimit, imagePaths, annotations);
 end
 
+% --------------------------------------------------------------------
+%                                                        Train encoder
+% --------------------------------------------------------------------
+
 vl_xmkdir(data.cacheDir);
 diary(data.diaryPath); diary on;
-disp('options:' ); disp(opts);
 
 if exist(data.encoderPath) & opts.reuseSavedData
     encoder = load(data.encoderPath);
@@ -112,14 +135,27 @@ else
     encoder = trainEncoder(imagePaths, ...
         opts.encoderParams{:});
     save(data.encoderPath, '-struct', 'encoder');
-    fprintf('Traning encoder done!\n');
+    fprintf('Traning encoder done!\n\n');
     diary off;
     diary on;
 end
 
+
+% --------------------------------------------------------------------
+%                                                     Extract concepts
+% --------------------------------------------------------------------
+
 % extract the concept space
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
     conceptList, opts.conceptExtractParams{:});
+fprintf('Extracting concepts done!\n\n');
+diary off;
+diary on;
+
+
+% --------------------------------------------------------------------
+%                                             Run similarity benchmark
+% --------------------------------------------------------------------
 
 % compute similarity RHO with similarity extractor
 [RHO, PVAL, coverage] = runSimilarityBenchmark(conceptSpace, 'pascal');

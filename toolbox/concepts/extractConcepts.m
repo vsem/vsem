@@ -26,7 +26,7 @@ opts.verbose = false;
 opts = vl_argparse(opts, varargin);
 opts.conceptHistParams = {'localization', opts.localization};
 
-disp(opts);
+disp('Extract concepts options:' ); disp(opts);
 
 % Check if we have the same number of images and corresponding tags
 assert(length(imagePaths) == length(annotations), ...

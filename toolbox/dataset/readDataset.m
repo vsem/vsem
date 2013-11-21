@@ -39,28 +39,16 @@ opts.inputFormat = 'completeAnnotation';
 opts.imageDir = '';
 opts.annotations = '';
 opts.filemask = '.*(jpg|gif)';
-
-% With this option on, corrputed images
-% are removed from the image paths.
-% This option slows down the reading
-% process a lot!
-opts.doubleCheckImages = false;
-
-opts.readImageFn = @readImage;
+opts.maxNumTrainImagesPerConcept = Inf;
 
 opts = vl_argparse(opts, varargin);
 
-reader.readImageFn = opts.readImageFn;
+disp('Dataset options:' ); disp(opts);
 
 switch opts.inputFormat
     case 'completeAnnotation'
         % complete list of images from the images database
         imagePaths = listFiles(opts.imageDir, opts.filemask);
-        
-        % remove corrputed images from the image paths
-        if opts.doubleCheckImages
-            imagePaths = doubleCheckImages(reader.readImageFn, imagePaths);
-        end
         
         % initializing annotations and concept list
         annotations = cell(1, length(imagePaths));
@@ -137,11 +125,6 @@ switch opts.inputFormat
             conceptImages = cellfun(@(x)(fullfile(opts.imageDir, x)), ...
                 lines{i}(2:end), 'UniformOutput', false);
             
-            % remove corrputed images from the image paths
-            if opts.doubleCheckImages
-                conceptImages = doubleCheckImages(reader.readImageFn, conceptImages);
-            end
-            
             if ~(isempty(conceptImages))
                 % indexes for images that are and are not already in the output list
                 newImageIdxs = ismember(conceptImages, imagePaths) == 0;
@@ -188,12 +171,14 @@ switch opts.inputFormat
             concept = conceptList{c};
             tmp = dir(fullfile(opts.imageDir, [concept filesep '*.jpg']));
             paths = strcat([fullfile(opts.imageDir,'/') concept filesep], {tmp.name});
-            % remove corrputed images from the image paths
-            if opts.doubleCheckImages
-                paths = doubleCheckImages(reader.readImageFn,paths);
-            end
-            % we add only those concepts which have at least one image
+            
+            % add only those concepts which have at least one image
             if ~(isempty(paths))
+                % select a random subset of all the images for this concept
+                if ~isinf(opts.maxNumTrainImagesPerConcept)
+                    ids = vl_colsubset(1:length(paths), opts.maxNumTrainImagesPerConcept);
+                    paths = paths(ids);
+                end
                 imagePaths{c} = paths;
                 overallLength = overallLength + length(imagePaths{c});
                 annotations(end+1:overallLength) = {concept};
@@ -251,11 +236,6 @@ switch opts.inputFormat
             usedImageIdxs = find(ismember(usedImageNames, conceptImageNames));
             
             newImagePaths = images(newImageIdxs);
-            
-            % remove corrputed images from the image paths
-            if opts.doubleCheckImages
-                newImagePaths = doubleCheckImages(reader.readImageFn,newImagePaths);
-            end
             
             if ~(isempty(newImagePaths))
                 % updating imageData with the new images
@@ -319,11 +299,6 @@ switch opts.inputFormat
         % read all images in the image folder
         imagePaths  = listFiles(opts.imageDir, opts.filemask);
         
-        % remove corrputed images from the image paths
-        if opts.doubleCheckImages
-            imagePaths = doubleCheckImages(imagePaths);
-        end
-        
         % initializing concept list
         conceptList = {};
         
@@ -380,19 +355,3 @@ filelist = [filelist{:}]';
 filelist = cellfun(@(x)(fullfile(directory, x)), filelist, ...
     'UniformOutput', false);
 end % readFiles
-
-% -------------------------------------------------------------------------
-function validPaths = doubleCheckImages(readImageFn, pathsToBeChecked)
-% -------------------------------------------------------------------------
-% This function removes corrputed images from the image paths.
-
-validPaths = {};
-for i = 1:length(pathsToBeChecked)
-    try
-        readImageFn(pathsToBeChecked{i});
-        validPaths{i} = pathsToBeChecked{i};
-    catch
-        fprintf(1, 'doubleCheckImages: Error reading file: %s\n', pathsToBeChecked{i});
-    end
-end
-end

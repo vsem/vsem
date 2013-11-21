@@ -66,7 +66,7 @@ opts.geometricExtension = 'none';
 opts.subdivisions = zeros(4,0);
 opts.readImageFn = @readImage;
 opts.extractorFn = @getDenseSIFT;
-opts.numTrainImages = 10000;
+opts.maxNumTrainImages = 10000;
 opts.lite = false;
 opts = vl_argparse(opts, varargin);
 
@@ -120,10 +120,7 @@ if isempty(opts.numSamplesPerWord)
     end
 end
 
-ids = vl_colsubset(1:length(imagePaths), opts.numTrainImages);
-trainPaths = imagePaths(ids);
-
-disp(opts);
+disp('Encoder options:' ); disp(opts);
 
 encoder.type = opts.type;
 encoder.subdivisions = opts.subdivisions;
@@ -134,6 +131,8 @@ encoder.renormalize = opts.renormalize;
 encoder.geometricExtension = opts.geometricExtension;
 
 %% Step 0: obtain sample image descriptors
+ids = vl_colsubset(1:length(imagePaths), opts.maxNumTrainImages);
+trainPaths = imagePaths(ids);
 numImages = numel(trainPaths);
 numDescrsPerImage = ceil(opts.numWords * opts.numSamplesPerWord / numImages);
 descrs = cell(1,numImages);
