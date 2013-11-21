@@ -35,6 +35,7 @@ for pass = 1:2
     data.annotationsPath = fullfile(data.resultDir, 'annotations.mat');
     data.conceptListPath = fullfile(data.resultDir, 'conceptList.mat');
     data.encoderPath = fullfile(data.resultDir, 'encoder.mat');
+    data.conceptSpacePath = fullfile(data.resultDir, 'conceptSpace.mat');
     data.diaryPath = fullfile(data.resultDir, 'diary.txt');
     data.cacheDir = fullfile(data.resultDir, 'cache');
 end
@@ -148,6 +149,7 @@ end
 % extract the concept space
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
     conceptList, opts.conceptExtractParams{:});
+save(data.conceptSpacePath, '-struct', 'conceptSpace');
 fprintf('Extracting concepts done!\n\n');
 diary off;
 diary on;
