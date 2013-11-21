@@ -39,13 +39,22 @@ opts.inputFormat = 'completeAnnotation';
 opts.imageDir = '';
 opts.annotations = '';
 opts.filemask = '.*(jpg|gif)';
+opts.doubleCheckImages = true;
+opts.readImageFn = @readImage;
 
 opts = vl_argparse(opts, varargin);
+
+reader.readImageFn = opts.readImageFn;
 
 switch opts.inputFormat
     case 'completeAnnotation'
         % complete list of images from the images database
         imagePaths = listFiles(opts.imageDir, opts.filemask);
+        
+        % remove corrputed images from the image paths
+        if opts.doubleCheckImages
+            imagePaths = doubleCheckImages(reader.readImageFn, imagePaths);
+        end
         
         % initializing annotations and concept list
         annotations = cell(1, length(imagePaths));
@@ -122,26 +131,39 @@ switch opts.inputFormat
             conceptImages = cellfun(@(x)(fullfile(opts.imageDir, x)), ...
                 lines{i}(2:end), 'UniformOutput', false);
             
-            % indexes for images that are and are not already in the output list
-            newImageIdxs = ismember(conceptImages, imagePaths) == 0;
-            usedImageIdxs = find(ismember(imagePaths, conceptImages));
+            % remove corrputed images from the image paths
+            if opts.doubleCheckImages
+                conceptImages = doubleCheckImages(reader.readImageFn, conceptImages);
+            end
             
-            % for 'conceptFile' annotation type, checking that the
-            % images in the annotation file do exist on the provided path
-            assert(all(cellfun(@(x)(exist(x,'file')), conceptImages)), ...
-                'Some of the images listed in the annotation file are missing from the images folder, possible spelling error or deleted image.');
-            
-            % updating imageData with the new images
-            imagePaths = vertcat(imagePaths, ...
-                conceptImages(newImageIdxs));
-            annotations(end+1:length(imagePaths)) = {conceptName};
-            
-            % updating annotation for and assigning back those entries which are already in imageData
-            oldannots = annotations(usedImageIdxs);
-            newannots = cellfun(@(x)(horzcat(x, {conceptName})), ...
-                oldannots, 'UniformOutput', false);
-            
-            annotations(usedImageIdxs) = newannots;
+            if ~(isempty(conceptImages))
+                
+                
+                
+                % indexes for images that are and are not already in the output list
+                newImageIdxs = ismember(conceptImages, imagePaths) == 0;
+                usedImageIdxs = find(ismember(imagePaths, conceptImages));
+                
+                % for 'conceptFile' annotation type, checking that the
+                % images in the annotation file do exist on the provided path
+                assert(all(cellfun(@(x)(exist(x,'file')), conceptImages)), ...
+                    'Some of the images listed in the annotation file are missing from the images folder, possible spelling error or deleted image.');
+                
+                % updating imageData with the new images
+                imagePaths = vertcat(imagePaths, ...
+                    conceptImages(newImageIdxs));
+                annotations(end+1:length(imagePaths)) = {conceptName};
+                
+                % updating annotation for and assigning back those entries which are already in imageData
+                oldannots = annotations(usedImageIdxs);
+                newannots = cellfun(@(x)(horzcat(x, {conceptName})), ...
+                    oldannots, 'UniformOutput', false);
+                
+                annotations(usedImageIdxs) = newannots;
+            else
+                conceptList{i} = [];
+                conceptList(~cellfun('isempty',conceptList));
+            end
         end
         % sorting concepts
         conceptList = sort(conceptList);
@@ -162,9 +184,20 @@ switch opts.inputFormat
             % extracting concept name and associated images
             concept = conceptList{c};
             tmp = dir(fullfile(opts.imageDir, [concept filesep '*.jpg']));
-            imagePaths{c} = strcat([fullfile(opts.imageDir,'/') concept filesep], {tmp.name});
-            overallLength = overallLength + length(imagePaths{c});
-            annotations(end+1:overallLength) = {concept};
+            paths = strcat([fullfile(opts.imageDir,'/') concept filesep], {tmp.name});
+            % remove corrputed images from the image paths
+            if opts.doubleCheckImages
+                paths = doubleCheckImages(reader.readImageFn,paths);
+            end
+            % we add only those concepts which have at least one image
+            if ~(isempty(paths))
+                imagePaths{c} = paths;
+                overallLength = overallLength + length(imagePaths{c});
+                annotations(end+1:overallLength) = {concept};
+            else
+                conceptList{c} = [];
+                conceptList = conceptList(~cellfun('isempty',conceptList));
+            end
         end
         
         imagePaths = cat(2,imagePaths{:});
@@ -173,6 +206,11 @@ switch opts.inputFormat
         conceptList = sort(conceptList);
         
     case 'conceptFolderWithRepetition'
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % WARNING: The execution of this code might be very slow if      %
+        % the dataset to be read is too large.                           %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         % if the input is a folder with one subfolder for each tag,
         % determining concept list from these along with their number
         conceptFolders = dir(opts.imageDir);
@@ -209,23 +247,41 @@ switch opts.inputFormat
             newImageIdxs = ismember(conceptImageNames, usedImageNames) == 0;
             usedImageIdxs = find(ismember(usedImageNames, conceptImageNames));
             
-            % updating imageData with the new images
-            imagePaths = vertcat(imagePaths, images(newImageIdxs));
-            annotations(end+1:length(imagePaths)) = {conceptName};
+            newImagePaths = images(newImageIdxs);
             
+            % remove corrputed images from the image paths
+            if opts.doubleCheckImages
+                newImagePaths = doubleCheckImages(reader.readImageFn,newImagePaths);
+            end
             
-            % updating annotation for and assigning back those
-            % entries which are already in imageData
-            annots = annotations(usedImageIdxs);
-            annots = cellfun(@(x)(horzcat(x, {conceptName})), ...
-                annots, 'UniformOutput', false);
-            
-            annotations(usedImageIdxs) = annots;
+            if ~(isempty(newImagePaths))
+                % updating imageData with the new images
+                imagePaths = vertcat(imagePaths, newImagePaths);
+                annotations(end+1:length(imagePaths)) = {conceptName};
+                
+                
+                % updating annotation for and assigning back those
+                % entries which are already in imageData
+                annots = annotations(usedImageIdxs);
+                annots = cellfun(@(x)(horzcat(x, {conceptName})), ...
+                    annots, 'UniformOutput', false);
+                
+                annotations(usedImageIdxs) = annots;
+                
+            else
+                conceptList{i} = [];
+                conceptList(~cellfun('isempty',conceptList));
+            end
         end
         % sorting concepts
         conceptList = sort(conceptList);
         
     case 'imageFile'
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % WARNING: This reading option doesn't support                   %
+        % opts.doubleCheckImages yet.                                    %
+        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        
         
         % opening, reading the annotation file and extracting annotation
         % and images list from it
@@ -238,6 +294,7 @@ switch opts.inputFormat
         
         imagePaths = cellfun(@(x) (fullfile(opts.imageDir,x{1})), ...
             annotation, 'UniformOutput', false);
+        
         
         % initializing
         conceptList = {};
@@ -258,6 +315,11 @@ switch opts.inputFormat
     case 'descFiles'
         % read all images in the image folder
         imagePaths  = listFiles(opts.imageDir, opts.filemask);
+        
+        % remove corrputed images from the image paths
+        if opts.doubleCheckImages
+            imagePaths = doubleCheckImages(imagePaths);
+        end
         
         % initializing concept list
         conceptList = {};
@@ -311,3 +373,21 @@ end % switch
     end % readFiles
 
 end % prepareImages
+
+
+% -------------------------------------------------------------------------
+function validPaths = doubleCheckImages(readImageFn, pathsToBeChecked)
+% -------------------------------------------------------------------------
+
+% This function removes corrputed images from the image paths.
+
+validPaths = {};
+for i = 1:length(pathsToBeChecked)
+    try
+        readImageFn(pathsToBeChecked{i});
+        validPaths{i} = pathsToBeChecked{i};
+    catch
+        fprintf(1, 'doubleCheckImages: Error reading file: %s\n', pathsToBeChecked{i});
+    end
+end
+end
