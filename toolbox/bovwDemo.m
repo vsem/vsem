@@ -68,7 +68,8 @@ opts.conceptExtractParams = {...
     'localization', 'global',...
     'verbose', false};
 
-opts.transformations = 'pmi';
+% concept space tranformation parameters
+opts.transformations = 'lmi';
 
 % tiny settings
 if strcmpi(opts.demoType, 'tiny')
