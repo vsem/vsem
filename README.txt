@@ -3,33 +3,66 @@
 
 Welcome and thanks for downloading VSEM!
 
+
+
+VSEM is a novel toolkit which allows the extraction of 
+image-based representations of concepts in an easy fashion.
+
+VSEM is developed on top of VLFeat (www.vlfeat.org)
+and it is equipped with state-of-the-art algorithms, 
+from low-level feature detection and description up to 
+the BoVW representation of images, together with a set 
+of new routines necessary to move from an image-wise 
+to a concept-wise representation of image content.
+
+
+VSEM is distributed under the BSD license (see the COPYING file).
+
+
+QUICK START WITH MATLAB
+
 Here are some simple steps to install the toolbox.
 
-	1. Install VLFeat 0.9.17. You can find it at www.vlfeat.org.
+1. Download and install the latest VLFeat binary 
+package from http://www.vlfeat.org/download/. Please 
+follow carefully the installation instructions on the 
+VLFeat website. You can choose between a One-time
+setup and a Permanent setup, but the latter is preferable.
+Note that the pre-compiled binaries require MATLAB 2009B and
+later.
 
-From the "toolbox" folder:
 
-	2. Run the file 'vsem_setup.m'.
+2. Start MATLAB and run the
+VSEM setup command:
+
+> run('VSEMROOT/toolbox/vsem_setup')
+
+Where VSEMROOT is the path to the VSEM directory
+created by unpacking the archive.
 	
-		This will allow you to use the library, which
-		already incorporates a basic image dataset to
-		demonstrate the demos with.
-	
+This will allow you to use the library, which
+already incorporates a basic image dataset to
+demonstrate the demo with. 
 
-Now it is already possible to test VSEM by running 'bovwPascalDemo'.
-		
+Run the VSEM demo by
 
-Several functionalities within the library require some paths
-to be added to Matlab path. To use single portions of the code
-from outside the demos:
+> bovwDemo
 
-	3. Run 'vsem_setup.m'.
-	
-		This can be automatized by adding
-		
-		run(fullfile(vsempath,'toolbox/vsem_setup.m'))
 
-        where vsempath is VSEM's folder, to Matlab 'startup.m' file, 
-        usually located in
-		
-		fullfile(matlabroot, 'toolbox/local')
+3. To automatically add VSEM to the MATLAB environment,
+add the VSEM setup command 
+
+run('VSEMROOT/toolbox/vsem_setup')
+
+to the to Matlab 'startup.m' file, 
+usually located in
+
+MATLABROOT/toolbox/local
+
+where MATLABROOT is the path to your MATLAB directory.
+Note that if startup.m cannot be found, you have to 
+simply create one by yourself with your favourite text
+editor, locate it where MATLAB can see it (e.g., in
+MATLABROOT/toolbox/local) and add the 
+VSEM setup command. MATLAB will automatically run 
+it the next time it will be opened.
