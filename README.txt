@@ -1,8 +1,7 @@
 			VSEM (Visual Semantics Library)
 				Version 0.2
 
-Welcome and thanks for downloading VSEM!
-
+Welcome to VSEM!
 
 
 VSEM is a novel toolkit which allows the extraction of 
