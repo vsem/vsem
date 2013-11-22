@@ -1,3 +1,3 @@
-function lmiM = lmiReweight(M)
-    lmiM = double(M) .* concepts.space.transformations.reweighting.pmiReweight(M);
+function matrix = lmiReweight(matrix)
+    matrix = double(matrix) .* concepts.space.transformations.reweighting.pmiReweight(matrix);
 end

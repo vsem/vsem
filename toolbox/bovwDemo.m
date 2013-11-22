@@ -68,6 +68,8 @@ opts.conceptExtractParams = {...
     'localization', 'global',...
     'verbose', false};
 
+opts.transformations = 'pmi';
+
 % tiny settings
 if strcmpi(opts.demoType, 'tiny')
     opts.encoderParams = {...
@@ -149,6 +151,18 @@ end
 % extract the concept space
 conceptSpace = extractConcepts(encoder, imagePaths, annotations, ...
     conceptList, opts.conceptExtractParams{:});
+
+% compute transformations
+switch opts.transformations
+    case 'pmi'        
+        % compute pointwise mutual information
+        conceptSpace.conceptMatrix = pmiReweight(conceptSpace.conceptMatrix);        
+    case 'lmi'
+        % compute local mutual information
+        conceptSpace.conceptMatrix = lmiReweight(conceptSpace.conceptMatrix);
+end
+
+% save the concept space
 save(data.conceptSpacePath, '-struct', 'conceptSpace');
 fprintf('Extracting concepts done!\n\n');
 diary off;

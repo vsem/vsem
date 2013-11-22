@@ -25,8 +25,8 @@ Here are some simple steps to install the toolbox.
 1. Download and install the latest VLFeat binary 
 package from http://www.vlfeat.org/download/. Please 
 follow carefully the installation instructions on the 
-VLFeat website. You can choose between a One-time
-setup and a Permanent setup, but the latter is preferable.
+VLFeat website. You can choose between a one-time
+setup and a permanent setup, but the latter is preferable.
 Note that the pre-compiled binaries require MATLAB 2009B and
 later.
 
@@ -54,12 +54,9 @@ add the VSEM setup command
 run('VSEMROOT/toolbox/vsem_setup')
 
 to the to Matlab 'startup.m' file, 
-usually located in
-
-MATLABROOT/toolbox/local
-
+usually located in MATLABROOT/toolbox/local
 where MATLABROOT is the path to your MATLAB directory.
-Note that if startup.m cannot be found, you have to 
+Note that if 'startup.m' cannot be found, you have to 
 simply create one by yourself with your favourite text
 editor, locate it where MATLAB can see it (e.g., in
 MATLABROOT/toolbox/local) and add the 
