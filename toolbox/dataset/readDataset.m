@@ -95,6 +95,7 @@ switch opts.inputFormat
                 end
                 annotations{i} = annots;
             catch ME
+                fprintf('Following problem for annotation file %s:\n',annotationPath);
                 fprintf(1, '%s\n', ME.message);
             end
         end
