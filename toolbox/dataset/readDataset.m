@@ -65,34 +65,38 @@ switch opts.inputFormat
             % extracting annotation
             annotationFile = readXML(annotationPath);
             
-            % extracting the objects' list for the ith image
-            objectNames = {annotationFile.annotation.object.name};
-            annots = cell(2, length(objectNames));
-            
-            % iterating over the set of objects
-            for j = 1:length(objectNames)
+            try
+                % extracting the objects' list for the ith image
+                objectNames = {annotationFile.annotation.object.name};
+                annots = cell(2, length(objectNames));
                 
-                
-                % object name for the kth object
-                objectName = objectNames{j};
-                
-                % if not yet recorded, adding the object name to the concept list
-                if all(~strcmp(objectName,conceptList))
-                    conceptList{end+1,1} = objectName;
+                % iterating over the set of objects
+                for j = 1:length(objectNames)
+                    
+                    
+                    % object name for the kth object
+                    objectName = objectNames{j};
+                    
+                    % if not yet recorded, adding the object name to the concept list
+                    if all(~strcmp(objectName,conceptList))
+                        conceptList{end+1,1} = objectName;
+                    end
+                    
+                    % assigning to the ith entry in the dataset the
+                    % object name and its bounding box
+                    annots{1,j} = objectName;
+                    
+                    xmin = str2double(annotationFile.annotation.object(j).bndbox.xmin);
+                    xmax = str2double(annotationFile.annotation.object(j).bndbox.xmax);
+                    ymin = str2double(annotationFile.annotation.object(j).bndbox.ymin);
+                    ymax = str2double(annotationFile.annotation.object(j).bndbox.ymax);
+                    
+                    annots{2,j} = [xmin xmax ymin ymax];
                 end
-                
-                % assigning to the ith entry in the dataset the
-                % object name and its bounding box
-                annots{1,j} = objectName;
-                
-                xmin = str2double(annotationFile.annotation.object(j).bndbox.xmin);
-                xmax = str2double(annotationFile.annotation.object(j).bndbox.xmax);
-                ymin = str2double(annotationFile.annotation.object(j).bndbox.ymin);
-                ymax = str2double(annotationFile.annotation.object(j).bndbox.ymax);
-                
-                annots{2,j} = [xmin xmax ymin ymax];
+                annotations{i} = annots;
+            catch ME
+                fprintf(1, '%s\n', ME.message);
             end
-            annotations{i} = annots;
         end
         % sorting concepts
         conceptList = sort(conceptList);
