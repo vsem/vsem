@@ -7,12 +7,12 @@ Welcome to VSEM!
 VSEM is a novel toolkit which allows the extraction of 
 image-based representations of concepts in an easy fashion.
 
-VSEM is developed on top of VLFeat (www.vlfeat.org)
-and it is equipped with state-of-the-art algorithms, 
-from low-level feature detection and description up to 
-the BoVW representation of images, together with a set 
-of new routines necessary to move from an image-wise 
-to a concept-wise representation of image content.
+VSEM is developed on top of VLFeat and it is equipped 
+with state-of-the-art algorithms, from low-level feature 
+detection and description up to the BoVW representation 
+of images, together with a set of new routines necessary 
+to move from an image-wise to a concept-wise representation 
+of image content.
 
 
 VSEM is distributed under the BSD license (see the COPYING file).
@@ -53,12 +53,12 @@ add the VSEM setup command
 
 run('VSEMROOT/toolbox/vsem_setup')
 
-to the to Matlab 'startup.m' file, 
-usually located in MATLABROOT/toolbox/local
-where MATLABROOT is the path to your MATLAB directory.
-Note that if 'startup.m' cannot be found, you have to 
-simply create one by yourself with your favourite text
-editor, locate it where MATLAB can see it (e.g., in
-MATLABROOT/toolbox/local) and add the 
-VSEM setup command. MATLAB will automatically run 
-it the next time it will be opened.
+to the to Matlab 'startup.m' file, usually located 
+in MATLABROOT/toolbox/local where MATLABROOT is 
+the path to your MATLAB directory. Note that if 
+'startup.m' cannot be found, you have to simply 
+create one by yourself with your favourite text
+editor, locate it where MATLAB can see it (e.g., 
+in MATLABROOT/toolbox/local) and add the VSEM 
+setup command. MATLAB will automatically run it 
+the next time it will be opened.

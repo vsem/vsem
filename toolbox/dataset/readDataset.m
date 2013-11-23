@@ -38,7 +38,7 @@ function [imagePaths, annotations, conceptList] = readDataset(varargin)
 opts.inputFormat = 'completeAnnotation';
 opts.imageDir = '';
 opts.annotations = '';
-opts.filemask = '.*(jpg|gif)';
+opts.filemask = '.*(jpg|JPEG|gif)';
 opts.maxNumTrainImagesPerConcept = Inf;
 
 opts = vl_argparse(opts, varargin);
