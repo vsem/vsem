@@ -1,4 +1,4 @@
-function [im, scale] = readImage(imagePath)
+function [im, scale] = readImage(imagePath, varargin)
 % READIMAGE   Read and standardize image
 %    [IM, SCALE] = READIMAGE(IMAGEPATH) reads the specified image file,
 %    converts the result to SINGLE class, and rescales the image
@@ -16,22 +16,27 @@ function [im, scale] = readImage(imagePath)
 % This file is part of the VLFeat library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
+opts.resize = false;
+opts = vl_argparse(opts, varargin);
+
 if ischar(imagePath)
-  try
-    im = imread(imagePath) ;
-  catch
-    error('Corrupted image %s', imagePath) ;
-  end
+    try
+        im = imread(imagePath) ;
+    catch
+        error('Corrupted image %s', imagePath) ;
+    end
 else
-  im = imagePath ;
+    im = imagePath ;
 end
 
 im = im2single(im) ;
 
-scale = 1 ;
-if (size(im,1) > 480)
-  scale = 480 / size(im,1) ;
-  im = imresize(im, scale) ;
-  im = min(max(im,0),1) ;
+if opts.resize   
+    scale = 1 ;
+    if (size(im,1) > 480)
+        scale = 480 / size(im,1) ;
+        im = imresize(im, scale) ;
+        im = min(max(im,0),1) ;
+    end
 end
 

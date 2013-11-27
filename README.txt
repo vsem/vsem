@@ -15,7 +15,7 @@ to move from an image-wise to a concept-wise representation
 of image content.
 
 
-VSEM is distributed under the BSD license (see the COPYING file).
+VSEM is distributed under the BSD license (see the LICENSE file).
 
 
 QUICK START WITH MATLAB
