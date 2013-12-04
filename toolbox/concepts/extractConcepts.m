@@ -43,8 +43,8 @@ conceptSpace=[];
 conceptMatrixInitialized = false;
 % extracting concepts over the whole selected set of images
 for i = 1:size(imagePaths, 1)
-    conceptName = char(annotations{1}(1));
-    if ~isempty(strfind(conceptList,conceptName))
+    conceptName = char(annotations{i}(1))
+    if  any(strcmp(conceptName, conceptList))
         
         if opts.verbose
             % handle for cancel button on progress bar
