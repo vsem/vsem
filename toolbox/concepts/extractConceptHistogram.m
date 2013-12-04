@@ -22,11 +22,7 @@ switch lower(opts.localization)
         % extracting unique objects for the image
         % TODO: uniform readDataset so that this check is nod nedeed
         % anymore
-        if iscell(annotation)
-            objectList = cellfun(@(x)x, annotation(1,:), 'UniformOutput', false);
-        else
-            objectList = cellfun(@(x)x, {annotation(1,:)}, 'UniformOutput', false);
-        end
+        objectList = cellfun(@(x)x, annotation(1,:), 'UniformOutput', false);
         objectList = unique(objectList);
         % computing histogram
         histogram = encodeImage(encoder, imagePath);

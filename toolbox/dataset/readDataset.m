@@ -186,7 +186,7 @@ switch opts.inputFormat
                 end
                 imagePaths{c} = paths;
                 overallLength = overallLength + length(imagePaths{c});
-                annotations(end+1:overallLength) = {concept};
+                annotations(end+1:overallLength) = {{concept}};
             else
                 conceptList{c} = [];
                 conceptList = conceptList(~cellfun('isempty',conceptList));

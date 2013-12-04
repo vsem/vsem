@@ -43,7 +43,7 @@ conceptSpace=[];
 conceptMatrixInitialized = false;
 % extracting concepts over the whole selected set of images
 for i = 1:size(imagePaths, 1)
-    conceptName = annotations{i}(1)
+    conceptName = annotations{i}(1);
     if  any(strcmp(conceptName, conceptList))
         
         if opts.verbose
