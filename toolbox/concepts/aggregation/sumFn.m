@@ -1,7 +1,8 @@
-function updatedMatrix = sumFn(conceptMatrix,histogram,idxs)
-% sum Sum aggregation
-%	sum(M1, M2, idxs) aggregates the matrix 'M1' to the matrix 'M2' for the
-%   'idxs' indexes and returns the updated matrix.
+function conceptMatrix = sumFn(conceptMatrix, histogram, idxs)
+% SUMFN aggregation
+%	sumFn(conceptMatrix, histogram, idxs) aggregates the matrix 
+%   'histogram' to the matrix 'conceptMatrix' for the
+%   'idxs' indexes and returns the updated conceptMatrix.
 %
 
 % Author: Ulisse Bordignon
@@ -11,4 +12,4 @@ function updatedMatrix = sumFn(conceptMatrix,histogram,idxs)
 % This file is part of the VSEM library and is made available under
 % the terms of the BSD license (see the COPYING file).
 
-updatedMatrix = bsxfun(@plus,conceptMatrix(:,idxs),histogram);
+conceptMatrix = bsxfun(@plus,conceptMatrix(:,idxs),histogram);

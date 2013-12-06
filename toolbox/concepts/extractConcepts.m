@@ -79,7 +79,8 @@ for i = 1:size(imagePaths, 1)
                 case 'VSEM:FeatExt'
                     fprintf(1, '%s\n', ME.message);
                 otherwise
-                    fprintf(1, 'Error reading file: %s\n', imagePaths{i});
+                    fprintf(1, 'Following error while reading file: %s\n', imagePaths{i});
+                    fprintf(1, '%s\n', ME.message);
             end
         end % try-catch block
     end
