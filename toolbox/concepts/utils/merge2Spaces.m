@@ -1,4 +1,4 @@
-function combinedSpace = concatSpaces(conceptSpace1, conceptSpace2)
+function conceptSpace = merge2Spaces(conceptSpace1, conceptSpace2)
 % concat Cocatenate two conceptSpaces
 %	combinedconceptSpace = concat(conceptSpace1, conceptSpace2) 
 % combines two conceptSpaces via concatenation. 
@@ -30,5 +30,5 @@ normalizedMatrix2 = normc(conceptMatrix2);
 % Create a new concept conceptSpace resulting from the combination of the given
 % concept conceptSpaces. Note that only those concepts that are in common between
 % the two concept conceptSpaces are retained.
-combinedSpace.conceptMatrix = [normalizedMatrix1;normalizedMatrix2];
-combinedSpace.conceptIndex = containers.Map(commonConcepts, 1:length(commonConcepts));
+conceptSpace.conceptMatrix = [normalizedMatrix1;normalizedMatrix2];
+conceptSpace.conceptIndex = containers.Map(commonConcepts, 1:length(commonConcepts));

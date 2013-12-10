@@ -64,7 +64,7 @@ opts.encoderParams = {...
 
 % concept extraction parameters
 opts.conceptExtractParams = {...
-    'localization', 'global',...
+    'localization', 'object',...
     'verbose', false};
 
 % concept space tranformation parameters
@@ -163,7 +163,7 @@ switch opts.transformations
 end
 
 % save the concept space
-save(data.conceptSpacePath, '-struct', 'conceptSpace');
+save(data.conceptSpacePath, 'conceptSpace');
 fprintf('Extracting concepts done!\n\n');
 diary off;
 diary on;
