@@ -79,7 +79,7 @@ if strcmpi(opts.demoType, 'tiny')
         'step', 4, ...
         'scales', 2.^(1:-.5:-3))};
     % maximum number of images used
-    opts.imageLimit = 10;
+    opts.imageLimit = 1000;
 end
 
 % color extractor
